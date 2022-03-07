@@ -46,9 +46,10 @@ GameObject:
   - component: {fileID: 217891751121479273}
   - component: {fileID: 217891751121479268}
   - component: {fileID: 217891751121479269}
+  - component: {fileID: 1598656597}
   m_Layer: 6
   m_Name: Vehicle
-  m_TagString: Untagged
+  m_TagString: Car
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60,7 +61,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 217891751121479272}
-  m_LocalRotation: {x: -0, y: -0.70710677, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 35.7, y: 3.19, z: 17.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -126,20 +127,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9b04bfd86e0e5c4fbc1ccc0a323dfba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motorForce: 0
-  breakForce: 0
-  maxSteerAngle: 0
-  m_maxSpeed: 0
-  frontLeftWheelCollider: {fileID: 0}
-  frontRightWheelCollider: {fileID: 0}
-  rearLeftWheelCollider: {fileID: 0}
-  rearRightWheelCollider: {fileID: 0}
-  frontLeftWheelTransform: {fileID: 0}
-  frontRightWheelTransform: {fileID: 0}
-  rearLeftWheelTransform: {fileID: 0}
-  rearRightWheelTransform: {fileID: 0}
-  VehicleRig: {fileID: 0}
-  CenterOfMass: {fileID: 0}
+  defaultMaxSpeed: 6
+  defaultMaxSteerAngle: 40
+  horizontalInput: 0
+  verticalInput: 0
+  isBreaking: 0
+  currentSpeedSqr: 0
+  motorForce: 1000
+  breakForce: 3000
+  frontLeftWheelCollider: {fileID: 4082123391131174968}
+  frontRightWheelCollider: {fileID: 4082123391555015035}
+  rearLeftWheelCollider: {fileID: 4082123391273763833}
+  rearRightWheelCollider: {fileID: 4082123391093514241}
+  frontLeftWheelTransform: {fileID: 31259637726566868}
+  frontRightWheelTransform: {fileID: 3181597096772177787}
+  rearLeftWheelTransform: {fileID: 3434170156212394420}
+  rearRightWheelTransform: {fileID: 385045231150269152}
+  VehicleRig: {fileID: 217891751121479271}
+  CenterOfMass: {fileID: 4082123391877456520}
 --- !u!114 &217891751121479269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,8 +158,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  controller: {fileID: 0}
-  speed: 1
+  controller: {fileID: 217891751121479268}
+  bNeedPath: 1
+  maxPathSpeed: 5
+  randomDestination: 1
+--- !u!65 &1598656597
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217891751121479272}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.0529785, y: 1.6143956, z: 1.4027176}
+  m_Center: {x: 0.011948943, y: 0.7874383, z: 3.61302}
 --- !u!1 &1654330402988669482
 GameObject:
   m_ObjectHideFlags: 0

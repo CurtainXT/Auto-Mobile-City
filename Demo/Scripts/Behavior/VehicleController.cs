@@ -5,25 +5,26 @@ using UnityEngine;
 
 public class VehicleController : MonoBehaviour
 {
+    public float defaultMaxSpeed;
+    public float defaultMaxSteerAngle;
+    public float horizontalInput;
+    public float verticalInput;
+    public bool isBreaking;
+    [HideInInspector]
+    public float currentSpeedSqr = 0;
+
     [SerializeField]
     private float motorForce;
     [SerializeField]
     private float breakForce;
-    [SerializeField]
-    private float maxSteerAngle;
-    [SerializeField]
-    private float m_maxSpeed;
 
-    private const string HORIZONTAL = "Horizontal";
-    private const string VERTICAL = "Vertical";
+    //private const string HORIZONTAL = "Horizontal";
+    //private const string VERTICAL = "Vertical";
 
-    private float horizontalInput;
-    private float verticalInput;
+
     private float currentSteerAngle;
-    private bool isBreaking;
+
     private float currentBreakForce;
-    private Vector3 nextWaypoint;
-    private bool bcanDirve = false;
     [SerializeField]
     private WheelCollider frontLeftWheelCollider;
     [SerializeField]
@@ -56,76 +57,23 @@ public class VehicleController : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if(bcanDirve)
-        {
-            CalculateInput();
+        HandleMotor();
 
-            HandleMotor();
+        HandleSteering();
 
-            HandleSteering();
+        UpdateWheelsVisual();
 
-            UpdateWheelsVisual();
-        }
-
+        currentSpeedSqr = VehicleRig.velocity.sqrMagnitude;
     }
 
-    public void GetNextWaypoint(Vector3 waypoint)
-    {
-        nextWaypoint = waypoint;
-        bcanDirve = true;
-    }
 
-    private void CalculateInput()
-    {
-        float leftOrRight = AngleDir(transform.forward, nextWaypoint - transform.position, transform.up);
-
-        if (leftOrRight > 0)
-            horizontalInput = 0.8f;
-        else
-            horizontalInput = -0.8f;
-        if (leftOrRight == 0)
-            horizontalInput = 0;
-
-        if (VehicleRig.velocity.sqrMagnitude > m_maxSpeed*m_maxSpeed || (transform.position - nextWaypoint).sqrMagnitude < 20f)
-        {
-            verticalInput = 0;
-        }
-        else
-        {
-            verticalInput = 0.6f;
-        }
-
-        //isBreaking = true;
-    }
-
-    private float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
-    {
-        Vector3 perp = Vector3.Cross(fwd, targetDir);
-        float dir = Vector3.Dot(perp, up);
-
-        if (dir > 1f)
-        {
-            return 1.0f;
-        }
-        else if (dir < -1f)
-        {
-            return -1.0f;
-        }
-        else
-        {
-            return 0.0f;
-        }
-    }
 
     private void HandleMotor()
     {
         rearLeftWheelCollider.motorTorque = verticalInput * motorForce;
         rearRightWheelCollider.motorTorque = verticalInput * motorForce;
         currentBreakForce = isBreaking ? breakForce : 0;
-        if (isBreaking)
-        {
-            ApplyBreaking();
-        }
+        ApplyBreaking();
     }
 
     private void ApplyBreaking()
@@ -138,7 +86,7 @@ public class VehicleController : MonoBehaviour
 
     private void HandleSteering()
     {
-        currentSteerAngle = maxSteerAngle * horizontalInput;
+        currentSteerAngle = defaultMaxSteerAngle * horizontalInput;
         frontLeftWheelCollider.steerAngle = currentSteerAngle;
         frontRightWheelCollider.steerAngle = currentSteerAngle;
     }

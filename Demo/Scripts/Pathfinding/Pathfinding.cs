@@ -32,12 +32,12 @@ public class Pathfinding : MonoBehaviour
         requestManager = GetComponent<PathRequestManager>();
     }
 
-    public void StartFindPath(Vector3 pathStart, Vector3 targetPos)
+    public void StartFindPath(Vector3 start, Vector3 end, List<Path> startPaths = null)
     {
-        StartCoroutine(FindPath(pathStart, targetPos));
+        StartCoroutine(FindPath(start, end, startPaths));
     }
 
-    IEnumerator FindPath(Vector3 start, Vector3 end)
+    IEnumerator FindPath(Vector3 start, Vector3 end, List<Path> _startPaths = null)
     {
         Open.Clear();
         PathList = new List<Path>();
@@ -50,7 +50,10 @@ public class Pathfinding : MonoBehaviour
         startTile = FindClosestTile(startPoint);
         endTile = FindClosestTile(endPoint);
         List<Path> startPaths;
-        startPaths = startTile.paths;
+        if (_startPaths != null && _startPaths.Count > 0)
+            startPaths = _startPaths;
+        else
+            startPaths = startTile.paths;
         foreach (Path path in startPaths)
         {
             float h = CalculateHeuristic(path.pathPositions[path.pathPositions.Count - 1].position);
@@ -60,7 +63,7 @@ public class Pathfinding : MonoBehaviour
             OpenIDs.Add(node.path.Id, 0);
         }
         //int i = 0;
-        bool pathSuccess = false;
+        bool isPathSuccess = false;
         while (Open.Count > 0)
         {
 
@@ -70,7 +73,7 @@ public class Pathfinding : MonoBehaviour
             {
                 Closed.Add(node.path.Id, node);
                 endId = node.path.Id;
-                pathSuccess = true;
+                isPathSuccess = true;
                 break;
             }
             foreach (Path item in node.path.nextPaths)
@@ -91,15 +94,18 @@ public class Pathfinding : MonoBehaviour
 
         }
 
-        if (pathSuccess)
+        if (isPathSuccess)
         {
             Closed[endId].path = FindClosestPath(endPoint, Closed[endId].lastNode.path.nextPaths);
             GetPathList(Closed[endId]);
             PathList.Reverse();
             //PathList[0] = FindClosestPath(startPoint, startPaths);
-            requestManager.FinishedProcessingPath(PathList, pathSuccess);
+            requestManager.FinishedProcessingPath(PathList, isPathSuccess);
         }
-
+        else
+        {
+            requestManager.FinishedProcessingPath(null, isPathSuccess);
+        }
         yield return null;
         
     }
@@ -153,6 +159,7 @@ public class Pathfinding : MonoBehaviour
 
         return closestTile;
     }
+
     private Path FindClosestPath(Vector3 point, List<Path> paths)
     {
         Path closestPath = null;
