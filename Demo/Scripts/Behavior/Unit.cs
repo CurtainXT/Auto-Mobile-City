@@ -34,9 +34,14 @@ public class Unit : MonoBehaviour
     }
 
     public bool randomDestination = true;
-    private bool isMoving = false;
+    [SerializeField]
+    private bool isMoving = true;
+    [SerializeField]
     private bool drivingBihindCar = false;
+    [SerializeField]
     private bool drivingTrafficLights = false;
+    [SerializeField]
+    private bool stopByCar = false;
     private float currentMaxSpeed;
 
     private VehicleController carInFront;
@@ -53,11 +58,11 @@ public class Unit : MonoBehaviour
 
     void Update()
     {
-        if(!isMoving && !drivingBihindCar && !drivingTrafficLights)
-        {
-            // 出于未知原因停了下来
-            FindNextTarget();
-        }
+        //if(!isMoving && !drivingBihindCar && !drivingTrafficLights)
+        //{
+        //    // 出于未知原因停了下来
+        //    FindNextTarget();
+        //}
 
         if(bNeedPath)
         {
@@ -165,24 +170,35 @@ public class Unit : MonoBehaviour
 
     private void CalculateInput()
     {
+        // steering
         float leftOrRight = AngleDir(transform.forward, currentTargetWaypoint - transform.position, transform.up);
-
         if (leftOrRight > 0)
             controller.horizontalInput = 1f;
         else
             controller.horizontalInput = -1f;
-        if (leftOrRight == 0 || !isMoving)
+        if (leftOrRight == 0)
             controller.horizontalInput = 0;
 
-        if (controller.currentSpeedSqr > CurrentMaxSpeed * CurrentMaxSpeed || !isMoving/*|| (transform.position - nextWaypoint).sqrMagnitude < 20f*/)
+        // throttle
+        //if ( /*|| !isMoving/*|| (transform.position - nextWaypoint).sqrMagnitude < 20f*/)
+        //{
+        //    isMoving = false;
+        //}
+        //else
+        //{
+        //    controller.verticalInput = 1f;
+        //}
+        if (drivingTrafficLights || controller.currentSpeedSqr > CurrentMaxSpeed * CurrentMaxSpeed || stopByCar || drivingBihindCar && controller.currentSpeedSqr > carInFront.currentSpeedSqr)
         {
-            controller.verticalInput = 0;
+            isMoving = false;
         }
         else
         {
+            isMoving = true;
             controller.verticalInput = 1f;
         }
 
+        // break
         if (!isMoving)
         {
             controller.isBreaking = true;
@@ -201,11 +217,11 @@ public class Unit : MonoBehaviour
 
         if (dir > 1f)
         {
-            return 1.0f;
+            return 0.6f;
         }
         else if (dir < -1f)
         {
-            return -1.0f;
+            return -0.6f;
         }
         else
         {
@@ -216,7 +232,7 @@ public class Unit : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Car") && !other.isTrigger && currentPathIndex > 1)
+        if (other.CompareTag("Car") && !other.isTrigger)
         {
             float direction = Vector3.Angle(transform.forward, other.transform.forward);
             float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
@@ -225,9 +241,9 @@ public class Unit : MonoBehaviour
                 drivingBihindCar = true;
                 carInFront = other.GetComponentInParent<VehicleController>();
             }
-            if (direction > 40 && carDirection < 80 && carDirection > 45)
+            if (direction > 40 && carDirection < 100 && carDirection > 45)
             {
-                isMoving = false;
+                stopByCar = true;
             }
 
         }
@@ -267,14 +283,13 @@ public class Unit : MonoBehaviour
         if (isGreen)
         {
             drivingTrafficLights = false;
-            isMoving = true;
         }
     }
 
     IEnumerator StartMovingAfterWait(float seconds)
     {
         yield return new WaitForSeconds(seconds);
-        isMoving = true;
+        stopByCar = false;
     }
 
     private void OnDrawGizmos()
