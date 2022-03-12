@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9b04bfd86e0e5c4fbc1ccc0a323dfba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMaxSpeed: 6
+  defaultMaxSpeed: 10
   defaultMaxSteerAngle: 32
   horizontalInput: 0
   verticalInput: 0
@@ -161,9 +161,12 @@ MonoBehaviour:
   controller: {fileID: 217891751121479268}
   bNeedPath: 1
   maxPathSpeed: 5
+  LifeCount: 30
   randomDestination: 1
+  isMoving: 1
   drivingBihindCar: 0
   drivingTrafficLights: 0
+  stopByCar: 0
 --- !u!65 &1598656597
 BoxCollider:
   m_ObjectHideFlags: 0

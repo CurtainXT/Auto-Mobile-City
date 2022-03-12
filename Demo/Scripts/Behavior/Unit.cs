@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PolyPerfect.City;
+using System;
 
 // 可以将Unit视为车辆驾驶员
 public class Unit : MonoBehaviour
@@ -17,6 +18,8 @@ public class Unit : MonoBehaviour
     public bool bNeedPath = true;
     [HideInInspector]
     public float maxPathSpeed = 5f;
+    // Demo
+    public float LifeCount = 30;
     [HideInInspector]
     public float CurrentMaxSpeed
     {
@@ -48,12 +51,8 @@ public class Unit : MonoBehaviour
 
     void Start()
     {
-        if(randomDestination)
-        {
-            // 给个初始目标
-            FindNextTarget();
-        }
-
+        // 给个初始目标
+        FindNextTarget();
     }
 
     void Update()
@@ -64,7 +63,13 @@ public class Unit : MonoBehaviour
         //    FindNextTarget();
         //}
 
-        if(bNeedPath)
+        // Demo
+        LifeCount -= Time.deltaTime;
+        if (LifeCount < 0)
+            Destroy(this.gameObject);
+        //
+
+        if (bNeedPath)
         {
             PathRequestManager.RequestPath(transform.position, target.position, path.Count == 0 ? null : path[path.Count - 1].nextPaths, OnPathFound);
             //if(path.Count == 0)
@@ -95,7 +100,7 @@ public class Unit : MonoBehaviour
     {
         isMoving = true;
         currentPathIndex = 0;
-        currentPathPositionIndex = 0;
+        currentPathPositionIndex = FindClosestPathPositionIndexInUnitFront(path[currentPathIndex]);
         currentTargetWaypoint = path[currentPathIndex].pathPositions[currentPathPositionIndex].position;
 
         while (true)
@@ -125,6 +130,32 @@ public class Unit : MonoBehaviour
             }
             currentPathIndex++;
         }
+    }
+
+    private int FindClosestPathPositionIndexInUnitFront(Path path)
+    {
+        int currentClosestIndex = 0;
+        Transform ClosestPathPosition = null;
+        for (int i = 0; i < path.pathPositions.Count; i++)
+        {
+            Transform CurrentIndexPosition = path.pathPositions[i];
+            if (Vector3.Dot(transform.forward, (CurrentIndexPosition.position - transform.position).normalized) > 0)
+            {
+                if(ClosestPathPosition == null)
+                {
+                    currentClosestIndex = i;
+                    ClosestPathPosition = CurrentIndexPosition;
+                }
+
+                if ((CurrentIndexPosition.position - transform.position).sqrMagnitude < (ClosestPathPosition.position - transform.position).sqrMagnitude)
+                {
+                    currentClosestIndex = i;
+                    ClosestPathPosition = CurrentIndexPosition;
+                }
+            }
+        }
+
+        return currentClosestIndex;
     }
 
     public void FindNextTarget()
