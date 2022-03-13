@@ -4,28 +4,28 @@ using UnityEngine;
 
 public class UnitSpawner : MonoBehaviour
 {
-    public GameObject UnitToSpawn;
-    public float SpawnTimeInterval = 5f;
+    public string poolTag;
+    public float spawnTimeDelay;
 
-    float spawnTime;
-    
+    private float spawnTimer;
+    private ObjectPool pool;
+
     // Start is called before the first frame update
     void Start()
     {
-        spawnTime = SpawnTimeInterval;
+        pool = ObjectPool.Instance;
     }
 
     // Update is called once per frame
     void Update()
     {
-        spawnTime -= Time.deltaTime;
-        //Demo
-        if (spawnTime <= 0 && UnitToSpawn != null)
+        // Demo
+        if (spawnTimer <= 0 && pool != null)
         {
-            spawnTime = SpawnTimeInterval;
-            GameObject Unit_ref = GameObject.Instantiate(UnitToSpawn);
-            Unit_ref.transform.position = this.transform.position;
-            Unit_ref.transform.rotation = this.transform.rotation;
+            ObjectPool.Instance.SpawnFromPool(poolTag, this.transform.position, this.transform.rotation);
+            spawnTimer = spawnTimeDelay;
         }
+        spawnTimer -= Time.deltaTime;
+        //
     }
 }

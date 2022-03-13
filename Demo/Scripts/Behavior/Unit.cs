@@ -4,8 +4,8 @@ using UnityEngine;
 using PolyPerfect.City;
 using System;
 
-// ¿ÉÒÔ½«UnitÊÓÎª³µÁ¾¼İÊ»Ô±
-public class Unit : MonoBehaviour
+// å¯ä»¥å°†Unitè§†ä¸ºè½¦è¾†é©¾é©¶å‘˜
+public class Unit : MonoBehaviour, IPooledObject
 {
     public Transform target;
     public VehicleController controller;
@@ -47,35 +47,39 @@ public class Unit : MonoBehaviour
     private bool stopByCar = false;
     private float currentMaxSpeed;
 
+    // Editor
+    private Vector3 randomGizmosColor;
+
     private VehicleController carInFront;
 
-    void Start()
+    public void OnObjectSpawn()
     {
-        // ¸ø¸ö³õÊ¼Ä¿±ê
+        // ç»™ä¸ªåˆå§‹ç›®æ ‡
+        LifeCount = UnityEngine.Random.Range(30, 60);
+        controller.defaultMaxSpeed = UnityEngine.Random.Range(6f, 10f);
         FindNextTarget();
+        path.Clear();
+        randomGizmosColor = new Vector3(UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f));
+    }
+
+    public void DeActive()
+    {
+        this.gameObject.SetActive(false);
     }
 
     void Update()
     {
-        //if(!isMoving && !drivingBihindCar && !drivingTrafficLights)
-        //{
-        //    // ³öÓÚÎ´ÖªÔ­ÒòÍ£ÁËÏÂÀ´
-        //    FindNextTarget();
-        //}
-
         // Demo
         LifeCount -= Time.deltaTime;
         if (LifeCount < 0)
-            Destroy(this.gameObject);
+            DeActive();
         //
 
         if (bNeedPath)
         {
-            PathRequestManager.RequestPath(transform.position, target.position, path.Count == 0 ? null : path[path.Count - 1].nextPaths, OnPathFound);
-            //if(path.Count == 0)
-            //    PathRequestManager.RequestPath(transform.position, target.position, null,  OnPathFound);
-            //else
-            //    PathRequestManager.RequestPath(transform.position, target.position, path[path.Count - 1].nextPaths, OnPathFound);
+            PathRequestManager.PathRequest newRequest = new PathRequestManager.PathRequest(transform.position, target.position, this.gameObject, 
+                path.Count == 0 ? null : path[path.Count - 1].nextPaths, OnPathFound);
+            PathRequestManager.RequestPath(newRequest);
             bNeedPath = false;
         }
 
@@ -92,7 +96,11 @@ public class Unit : MonoBehaviour
         }
         else
         {
-            FindNextTarget();
+            Debug.LogWarning(this.gameObject.name + " can not find a path!");
+            // Demo
+            DeActive();
+            //
+            //FindNextTarget();
         }
     }
 
@@ -334,10 +342,10 @@ public class Unit : MonoBehaviour
                 //    j = (currentPathPositionIndex == 0) ? 1 : currentPathPositionIndex;
                 for (int j = 0; j < path[i].pathPositions.Count; j++)
                 {
-                    Gizmos.color = Color.black;
+                    Gizmos.color = new Color(randomGizmosColor.x, randomGizmosColor.y, randomGizmosColor.z, 1f);
 
 
-                    if((i > currentPathIndex && j != 0) || (i == currentPathIndex && j > currentPathPositionIndex))
+                    if ((i > currentPathIndex && j != 0) || (i == currentPathIndex && j > currentPathPositionIndex))
                     {
                         Gizmos.DrawCube(path[i].pathPositions[j].position, Vector3.one * 0.4f);
                         Gizmos.DrawLine(path[i].pathPositions[j - 1].position, path[i].pathPositions[j].position);

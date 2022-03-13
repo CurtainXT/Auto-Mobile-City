@@ -20,9 +20,9 @@ public class PathRequestManager : MonoBehaviour
         pathfinding = GetComponent<Pathfinding>();
     }
 
-    public static void RequestPath(Vector3 pathStart, Vector3 pathEnd, List<Path> startPaths, Action<List<Path>, bool> callback)
+    public static void RequestPath(PathRequest _request)
     {
-        PathRequest newRequest = new PathRequest(pathStart, pathEnd, startPaths, callback);
+        PathRequest newRequest = _request;
         instance.pathRequestQueue.Enqueue(newRequest);
         instance.TryProcessNext();
     }
@@ -32,6 +32,11 @@ public class PathRequestManager : MonoBehaviour
         if(!isProcessingPath && pathRequestQueue.Count > 0)
         {
             currentPathRequest = pathRequestQueue.Dequeue();
+            if(!currentPathRequest.requester.activeSelf)
+            {
+                TryProcessNext();
+                return;
+            }
             isProcessingPath = true;
             pathfinding.StartFindPath(currentPathRequest.pathStart, currentPathRequest.pathEnd, currentPathRequest.startPaths);
         }
@@ -39,22 +44,29 @@ public class PathRequestManager : MonoBehaviour
 
     public void FinishedProcessingPath(List<Path> path, bool success)
     {
-        currentPathRequest.callback(path, success);
+        // 由于对象池设计 寻路请求的对象有可能正处于未激活
+        if(currentPathRequest.requester.activeSelf)
+        {
+            currentPathRequest.callback(path, success);
+        }
+
         isProcessingPath = false;
         TryProcessNext();
     }
 
-    struct PathRequest
+    public struct PathRequest
     {
         public Vector3 pathStart;
         public Vector3 pathEnd;
+        public GameObject requester;
         public List<Path> startPaths;
         public Action<List<Path>, bool> callback;
 
-        public PathRequest(Vector3 _start, Vector3 _end, List<Path> _startPath, Action<List<Path>, bool> _callback)
+        public PathRequest(Vector3 _start, Vector3 _end, GameObject _requester, List<Path> _startPath, Action<List<Path>, bool> _callback)
         {
             pathStart = _start;
             pathEnd = _end;
+            requester = _requester;
             startPaths = _startPath;
             callback = _callback;
         }
