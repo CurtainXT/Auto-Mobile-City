@@ -167,6 +167,7 @@ MonoBehaviour:
   drivingBihindCar: 0
   drivingTrafficLights: 0
   stopByCar: 0
+  emergencyAvoidance: 0
 --- !u!65 &1598656597
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -178,8 +179,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.6982652, y: 0.8184756, z: 1.533031}
-  m_Center: {x: -0.0010299681, y: 0.7441818, z: 4.258492}
+  m_Size: {x: 1.6982652, y: 0.8184756, z: 3.4627345}
+  m_Center: {x: -0.0010299681, y: 0.7441818, z: 4.246929}
 --- !u!1 &1654330402988669482
 GameObject:
   m_ObjectHideFlags: 0

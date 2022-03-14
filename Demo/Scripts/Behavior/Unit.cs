@@ -20,6 +20,8 @@ public class Unit : MonoBehaviour, IPooledObject
     public float maxPathSpeed = 5f;
     // Demo
     public float LifeCount = 30;
+    //
+    //public float EmergencyAvoidanceTimeSpan = 0.8f;
     [HideInInspector]
     public float CurrentMaxSpeed
     {
@@ -45,6 +47,10 @@ public class Unit : MonoBehaviour, IPooledObject
     private bool drivingTrafficLights = false;
     [SerializeField]
     private bool stopByCar = false;
+    [SerializeField]
+    private bool emergencyAvoidance = false;
+    //[SerializeField]
+    //private float emergencyAvoidanceTimer = 0;
     private float currentMaxSpeed;
 
     // Editor
@@ -217,6 +223,16 @@ public class Unit : MonoBehaviour, IPooledObject
             controller.horizontalInput = -1f;
         if (leftOrRight == 0)
             controller.horizontalInput = 0;
+        if(emergencyAvoidance/* && emergencyAvoidanceTimer > 0*/)
+        {
+            controller.horizontalInput = 1;
+            //    emergencyAvoidanceTimer -= Time.deltaTime;
+        }
+        //else
+        //{
+        //    emergencyAvoidanceTimer = EmergencyAvoidanceTimeSpan;
+        //    emergencyAvoidance = false;
+        //}
 
         // throttle
         //if ( /*|| !isMoving/*|| (transform.position - nextWaypoint).sqrMagnitude < 20f*/)
@@ -227,7 +243,7 @@ public class Unit : MonoBehaviour, IPooledObject
         //{
         //    controller.verticalInput = 1f;
         //}
-        if (drivingTrafficLights || controller.currentSpeedSqr > CurrentMaxSpeed * CurrentMaxSpeed || stopByCar || drivingBihindCar && controller.currentSpeedSqr > carInFront.currentSpeedSqr)
+        if (drivingTrafficLights || controller.currentSpeedSqr > CurrentMaxSpeed * CurrentMaxSpeed || stopByCar || drivingBihindCar && carInFront != null && controller.currentSpeedSqr > carInFront.currentSpeedSqr)
         {
             isMoving = false;
         }
@@ -280,12 +296,24 @@ public class Unit : MonoBehaviour, IPooledObject
                 drivingBihindCar = true;
                 carInFront = other.GetComponentInParent<VehicleController>();
             }
-            if (direction > 40 && carDirection < 100 && carDirection > 45)
+            if (direction > 50 && direction < 100 && carDirection < 100 && carDirection > 45)
             {
                 stopByCar = true;
             }
 
         }
+        else if (other.CompareTag("Car") && Vector3.Angle(transform.forward, other.transform.forward) > 100)
+        {
+            if(other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr)
+            {
+                stopByCar = true;
+            }
+            else
+            {
+                emergencyAvoidance = true;
+            }
+        }
+
         if (other.CompareTag("TrafficLight") && !drivingTrafficLights)
         {
             TrafficLight trafic = other.GetComponent<TrafficLight>();
@@ -305,9 +333,17 @@ public class Unit : MonoBehaviour, IPooledObject
     {
         if (other.CompareTag("Car") && !other.isTrigger)
         {
-            StopCoroutine(StartMovingAfterWait(0.2f));
-            StartCoroutine(StartMovingAfterWait(0.2f));
+            StopCoroutine(StartMovingAfterWait(0.3f));
+            StartCoroutine(StartMovingAfterWait(0.3f));
             drivingBihindCar = false;
+        }
+        else if(other.CompareTag("Car") && other.isTrigger)
+        {
+            StopCoroutine(StartMovingAfterWait(0.3f));
+            StartCoroutine(StartMovingAfterWait(0.3f));
+            StopCoroutine(StopAvoidanceAfterTime(0.5f));
+            StartCoroutine(StopAvoidanceAfterTime(0.5f));
+
         }
         else if (other.CompareTag("TrafficLight"))
         {
@@ -329,6 +365,12 @@ public class Unit : MonoBehaviour, IPooledObject
     {
         yield return new WaitForSeconds(seconds);
         stopByCar = false;
+    }
+    
+    IEnumerator StopAvoidanceAfterTime(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        emergencyAvoidance = false;
     }
 
     private void OnDrawGizmos()
