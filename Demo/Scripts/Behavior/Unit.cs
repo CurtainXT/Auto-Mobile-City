@@ -7,22 +7,25 @@ using System;
 // 可以将Unit视为车辆驾驶员
 public class Unit : MonoBehaviour, IPooledObject
 {
+    public bool randomDestination = true;
     public Transform target;
     public VehicleController controller;
     List<Path> path = new List<Path>();
     int currentPathIndex;
     int currentPathPositionIndex;
     Vector3 currentTargetWaypoint;
-
     [HideInInspector]
     public bool bNeedPath = true;
+
+    public Vector2 defaultMaxSpeedRange;
     [HideInInspector]
     public float maxPathSpeed = 5f;
+    [SerializeField]
+    private float currentMaxSpeed;
     // Demo
     public float LifeCount = 30;
     public bool isShow = true;
     // --
-
     [HideInInspector]
     public float CurrentMaxSpeed
     {
@@ -39,11 +42,12 @@ public class Unit : MonoBehaviour, IPooledObject
         }
     }
 
-    public bool randomDestination = true;
-
     [SerializeField]
     StateType currentState = StateType.Moving;
-
+    [SerializeField]
+    private VehicleController otherCar;
+    [SerializeField]
+    private bool isOnCollision;
     #region Original Solution
     //[SerializeField]
     //private bool isMoving = true;
@@ -59,14 +63,6 @@ public class Unit : MonoBehaviour, IPooledObject
     //private float emergencyAvoidanceTimer = 0;
     #endregion
 
-    [SerializeField]
-    private float currentMaxSpeed;
-    [SerializeField]
-    private VehicleController otherCar;
-    [SerializeField]
-    private bool isOnCollision;
-
-
     // Editor
     private Vector3 randomGizmosColor;
     //--
@@ -76,7 +72,7 @@ public class Unit : MonoBehaviour, IPooledObject
     {
         // 给个初始目标
         LifeCount = UnityEngine.Random.Range(30, 60);
-        controller.defaultMaxSpeed = UnityEngine.Random.Range(6f, 10f);
+        controller.defaultMaxSpeed = UnityEngine.Random.Range(defaultMaxSpeedRange.x, defaultMaxSpeedRange.y);
         FindNextTarget();
         path.Clear();
         randomGizmosColor = new Vector3(UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f));
@@ -268,8 +264,11 @@ public class Unit : MonoBehaviour, IPooledObject
                     {
                         if (isOnCollision)
                         {
-                            StopCoroutine(DoAstern(0.2f));
-                            StartCoroutine(DoAstern(0.2f));
+                            if(isShow)
+                            {
+                                StopCoroutine(DoAstern(0.5f));
+                                StartCoroutine(DoAstern(0.5f));
+                            }
                         }
                         else
                         {

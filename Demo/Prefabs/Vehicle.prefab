@@ -157,15 +157,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c70cc63804f58f49a812def450957c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  randomDestination: 1
   target: {fileID: 0}
   controller: {fileID: 217891751121479268}
   bNeedPath: 1
+  defaultMaxSpeedRange: {x: 8, y: 10}
   maxPathSpeed: 5
+  currentMaxSpeed: 0
   LifeCount: 30
   isShow: 1
-  randomDestination: 1
   currentState: 0
-  currentMaxSpeed: 0
   otherCar: {fileID: 0}
   isOnCollision: 0
 --- !u!65 &1598656597
