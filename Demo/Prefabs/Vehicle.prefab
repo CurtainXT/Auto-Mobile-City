@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9b04bfd86e0e5c4fbc1ccc0a323dfba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMaxSpeed: 6
+  defaultMaxSpeed: 10
   defaultMaxSteerAngle: 32
   horizontalInput: 0
   verticalInput: 0
@@ -157,13 +157,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c70cc63804f58f49a812def450957c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  randomDestination: 1
   target: {fileID: 0}
   controller: {fileID: 217891751121479268}
   bNeedPath: 1
+  defaultMaxSpeedRange: {x: 8, y: 10}
   maxPathSpeed: 5
-  randomDestination: 1
-  drivingBihindCar: 0
-  drivingTrafficLights: 0
+  currentMaxSpeed: 0
+  LifeCount: 30
+  isShow: 1
+  currentState: 0
+  otherCar: {fileID: 0}
+  isOnCollision: 0
 --- !u!65 &1598656597
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -175,8 +180,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.6982651, y: 0.8184756, z: 0.44341564}
-  m_Center: {x: -0.0010299683, y: 0.7441818, z: 3.7416196}
+  m_Size: {x: 1.6982652, y: 0.8184756, z: 3.4627345}
+  m_Center: {x: -0.0010299681, y: 0.7441818, z: 4.246929}
 --- !u!1 &1654330402988669482
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,6 +838,7 @@ GameObject:
   - component: {fileID: 7123737460982049905}
   - component: {fileID: 7123737460979149905}
   - component: {fileID: 7123737460980280977}
+  - component: {fileID: 9061428640686940927}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -904,6 +910,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &9061428640686940927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7123737460982280273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bbdcec9ed5fb384db878fe29c59d524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9175436522448505307
 GameObject:
   m_ObjectHideFlags: 0
