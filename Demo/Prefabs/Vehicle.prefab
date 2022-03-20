@@ -162,12 +162,12 @@ MonoBehaviour:
   bNeedPath: 1
   maxPathSpeed: 5
   LifeCount: 30
+  isShow: 1
   randomDestination: 1
-  isMoving: 1
-  drivingBihindCar: 0
-  drivingTrafficLights: 0
-  stopByCar: 0
-  emergencyAvoidance: 0
+  currentState: 0
+  currentMaxSpeed: 0
+  otherCar: {fileID: 0}
+  isOnCollision: 0
 --- !u!65 &1598656597
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -837,6 +837,7 @@ GameObject:
   - component: {fileID: 7123737460982049905}
   - component: {fileID: 7123737460979149905}
   - component: {fileID: 7123737460980280977}
+  - component: {fileID: 9061428640686940927}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -908,6 +909,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &9061428640686940927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7123737460982280273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bbdcec9ed5fb384db878fe29c59d524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9175436522448505307
 GameObject:
   m_ObjectHideFlags: 0

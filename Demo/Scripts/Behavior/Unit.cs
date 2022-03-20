@@ -20,7 +20,9 @@ public class Unit : MonoBehaviour, IPooledObject
     public float maxPathSpeed = 5f;
     // Demo
     public float LifeCount = 30;
-    //
+    public bool isShow = true;
+    // --
+
     [HideInInspector]
     public float CurrentMaxSpeed
     {
@@ -59,16 +61,17 @@ public class Unit : MonoBehaviour, IPooledObject
 
     [SerializeField]
     private float currentMaxSpeed;
+    [SerializeField]
+    private VehicleController otherCar;
+    [SerializeField]
+    private bool isOnCollision;
+
 
     // Editor
     private Vector3 randomGizmosColor;
-
-    private VehicleController otherCar;
-    private bool isOnCollision;
-
     //--
 
-
+    #region Spawn&Despawn
     public void OnObjectSpawn()
     {
         // 给个初始目标
@@ -83,6 +86,17 @@ public class Unit : MonoBehaviour, IPooledObject
     {
         this.gameObject.SetActive(false);
     }
+
+    private void OnBecameVisible()
+    {
+        isShow = true;
+    }
+
+    private void OnBecameInvisible()
+    {
+        isShow = false;
+    }
+    #endregion
 
     void Update()
     {
@@ -101,6 +115,12 @@ public class Unit : MonoBehaviour, IPooledObject
         }
 
         HandleStateBehavior();
+
+        if(isShow)
+        {
+            if(LifeCount < 10f)
+                LifeCount = 10f;
+        }
     }
 
     #region Path Requesting&Following
@@ -217,10 +237,10 @@ public class Unit : MonoBehaviour, IPooledObject
                 break;
             case StateType.MovingBehindCar:
                 {
-                    if (otherCar != null)
+                    if (otherCar != null && otherCar.gameObject.activeSelf)
                     {
-                        CurrentMaxSpeed = otherCar.currentSpeedSqr;
-                        if((transform.position - otherCar.transform.position).sqrMagnitude > 0.2f * controller.currentSpeedSqr ||
+                        CurrentMaxSpeed = Mathf.Sqrt(otherCar.currentSpeedSqr);
+                        if((transform.position - otherCar.transform.position).sqrMagnitude > 0.1f * controller.currentSpeedSqr ||
                             CurrentMaxSpeed <= 0.01f)
                         {
                             CurrentMaxSpeed = 0;
@@ -230,7 +250,8 @@ public class Unit : MonoBehaviour, IPooledObject
                     }
                     else
                     {
-                        Debug.LogWarning("Why this is no car in front when you are in MovingBehindCar State?");
+                        //Debug.LogWarning("Why this is no car in front when you are in MovingBehindCar State?");
+                        currentState = StateType.Moving;
                     }
                 }
                 break;
@@ -243,11 +264,12 @@ public class Unit : MonoBehaviour, IPooledObject
                 break;
             case StateType.StopByCar:
                 {
-                    if (otherCar != null)
+                    if (otherCar != null && otherCar.gameObject.activeSelf)
                     {
                         if (isOnCollision)
                         {
-                            DoAstern();
+                            StopCoroutine(DoAstern(0.2f));
+                            StartCoroutine(DoAstern(0.2f));
                         }
                         else
                         {
@@ -256,13 +278,24 @@ public class Unit : MonoBehaviour, IPooledObject
                             HandleThrottleAndBreak();
                         }
                     }
+                    else
+                    {
+                        currentState = StateType.Moving;
+                    }
                 }
                 break;
             case StateType.Avoidance:
                 {
-                    CurrentMaxSpeed = maxPathSpeed;
-                    SteeringToAvoidance();
-                    HandleThrottleAndBreak();
+                    if (otherCar != null && otherCar.gameObject.activeSelf)
+                    {
+                        CurrentMaxSpeed = maxPathSpeed;
+                        SteeringToAvoidance();
+                        HandleThrottleAndBreak();
+                    }
+                    else
+                    {
+                        currentState = StateType.Moving;
+                    }
                 }
                 break;
             default:
@@ -320,11 +353,14 @@ public class Unit : MonoBehaviour, IPooledObject
         #endregion
     }
 
-    private void DoAstern()
+    private IEnumerator DoAstern(float Time)
     {
         controller.horizontalInput = 0;
         controller.verticalInput = -1f;
         controller.isBreaking = false;
+
+        yield return new WaitForSeconds(Time);
+        currentState = StateType.Moving;
     }
 
     private void SteeringToTarget()
@@ -352,7 +388,7 @@ public class Unit : MonoBehaviour, IPooledObject
 
     private void HandleThrottleAndBreak()
     {
-        if(controller.currentSpeedSqr < CurrentMaxSpeed * CurrentMaxSpeed * 0.95f)
+        if(controller.currentSpeedSqr < CurrentMaxSpeed * CurrentMaxSpeed)
         {
             controller.verticalInput = 1f;
             controller.isBreaking = false;
@@ -490,7 +526,7 @@ public class Unit : MonoBehaviour, IPooledObject
             }
             if (direction > 110)
             {
-                if (other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr)
+                if (other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr && !other.isTrigger)
                 {
                     currentState = StateType.StopByCar;
                 }
