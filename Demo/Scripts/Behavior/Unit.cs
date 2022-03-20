@@ -21,7 +21,6 @@ public class Unit : MonoBehaviour, IPooledObject
     // Demo
     public float LifeCount = 30;
     //
-    //public float EmergencyAvoidanceTimeSpan = 0.8f;
     [HideInInspector]
     public float CurrentMaxSpeed
     {
@@ -39,24 +38,36 @@ public class Unit : MonoBehaviour, IPooledObject
     }
 
     public bool randomDestination = true;
+
     [SerializeField]
-    private bool isMoving = true;
-    [SerializeField]
-    private bool drivingBihindCar = false;
-    [SerializeField]
-    private bool drivingTrafficLights = false;
-    [SerializeField]
-    private bool stopByCar = false;
-    [SerializeField]
-    private bool emergencyAvoidance = false;
+    StateType currentState = StateType.Moving;
+
+    #region Original Solution
+    //[SerializeField]
+    //private bool isMoving = true;
+    //[SerializeField]
+    //private bool drivingBehindCar = false;
+    //[SerializeField]
+    //private bool drivingTrafficLights = false;
+    //[SerializeField]
+    //private bool stopByCar = false;
+    //[SerializeField]
+    //private bool emergencyAvoidance = false;
     //[SerializeField]
     //private float emergencyAvoidanceTimer = 0;
+    #endregion
+
+    [SerializeField]
     private float currentMaxSpeed;
 
     // Editor
     private Vector3 randomGizmosColor;
 
-    private VehicleController carInFront;
+    private VehicleController otherCar;
+    private bool isOnCollision;
+
+    //--
+
 
     public void OnObjectSpawn()
     {
@@ -79,7 +90,7 @@ public class Unit : MonoBehaviour, IPooledObject
         LifeCount -= Time.deltaTime;
         if (LifeCount < 0)
             DeActive();
-        //
+        // --
 
         if (bNeedPath)
         {
@@ -89,9 +100,10 @@ public class Unit : MonoBehaviour, IPooledObject
             bNeedPath = false;
         }
 
-        CalculateInput();
+        HandleStateBehavior();
     }
 
+    #region Path Requesting&Following
     public void OnPathFound(List<Path> newPath, bool pathSuccessful)
     {
         if (pathSuccessful)
@@ -99,20 +111,21 @@ public class Unit : MonoBehaviour, IPooledObject
             path = newPath;
             StopCoroutine("FollowPath");
             StartCoroutine("FollowPath");
+            currentState = StateType.Moving;
         }
         else
         {
             Debug.LogWarning(this.gameObject.name + " can not find a path!");
             // Demo
             DeActive();
-            //
+            // --
             //FindNextTarget();
         }
     }
 
     IEnumerator FollowPath()
     {
-        isMoving = true;
+        //currentState = StateType.Moving;
         currentPathIndex = 0;
         currentPathPositionIndex = FindClosestPathPositionIndexInUnitFront(path[currentPathIndex]);
         currentTargetWaypoint = path[currentPathIndex].pathPositions[currentPathPositionIndex].position;
@@ -121,12 +134,12 @@ public class Unit : MonoBehaviour, IPooledObject
         {
             if (currentPathIndex >= path.Count)
             {
-                isMoving = false;
+                currentState = StateType.NoTarget;
                 FindNextTarget();
                 yield break;
             }
             maxPathSpeed = path[currentPathIndex].speed;
-            CurrentMaxSpeed = maxPathSpeed;
+            //CurrentMaxSpeed = maxPathSpeed;
             while (true)
             {
                 if ((transform.position - currentTargetWaypoint).sqrMagnitude < 0.2f * controller.currentSpeedSqr)
@@ -144,32 +157,6 @@ public class Unit : MonoBehaviour, IPooledObject
             }
             currentPathIndex++;
         }
-    }
-
-    private int FindClosestPathPositionIndexInUnitFront(Path path)
-    {
-        int currentClosestIndex = 0;
-        Transform ClosestPathPosition = null;
-        for (int i = 0; i < path.pathPositions.Count; i++)
-        {
-            Transform CurrentIndexPosition = path.pathPositions[i];
-            if (Vector3.Dot(transform.forward, (CurrentIndexPosition.position - transform.position).normalized) > 0)
-            {
-                if(ClosestPathPosition == null)
-                {
-                    currentClosestIndex = i;
-                    ClosestPathPosition = CurrentIndexPosition;
-                }
-
-                if ((CurrentIndexPosition.position - transform.position).sqrMagnitude < (ClosestPathPosition.position - transform.position).sqrMagnitude)
-                {
-                    currentClosestIndex = i;
-                    ClosestPathPosition = CurrentIndexPosition;
-                }
-            }
-        }
-
-        return currentClosestIndex;
     }
 
     public void FindNextTarget()
@@ -192,6 +179,7 @@ public class Unit : MonoBehaviour, IPooledObject
 
             }
 
+            #region Original Solution
             //if (t.tileType == Tile.TileType.Road || t.tileType == Tile.TileType.RoadAndRail)
             //{
             //    if (t.verticalType == Tile.VerticalType.Bridge)
@@ -210,12 +198,137 @@ public class Unit : MonoBehaviour, IPooledObject
             //    destination = checkpoints[0];
             //    start = transform.position;
             //}
+            #endregion
         }
     }
+    #endregion
 
-    private void CalculateInput()
+    #region Controller Handler
+    private void HandleStateBehavior()
     {
-        // steering
+        switch (currentState)
+        {
+            case StateType.Moving:
+                {
+                    CurrentMaxSpeed = maxPathSpeed;
+                    SteeringToTarget();
+                    HandleThrottleAndBreak();
+                }
+                break;
+            case StateType.MovingBehindCar:
+                {
+                    if (otherCar != null)
+                    {
+                        CurrentMaxSpeed = otherCar.currentSpeedSqr;
+                        if((transform.position - otherCar.transform.position).sqrMagnitude > 0.2f * controller.currentSpeedSqr ||
+                            CurrentMaxSpeed <= 0.01f)
+                        {
+                            CurrentMaxSpeed = 0;
+                        }
+                        SteeringToTarget();
+                        HandleThrottleAndBreak();
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Why this is no car in front when you are in MovingBehindCar State?");
+                    }
+                }
+                break;
+            case StateType.StopByTrafficLight:
+                {
+                    CurrentMaxSpeed = 0;
+                    SteeringToTarget();
+                    HandleThrottleAndBreak();
+                }
+                break;
+            case StateType.StopByCar:
+                {
+                    if (otherCar != null)
+                    {
+                        if (isOnCollision)
+                        {
+                            DoAstern();
+                        }
+                        else
+                        {
+                            CurrentMaxSpeed = 0;
+                            SteeringToTarget();
+                            HandleThrottleAndBreak();
+                        }
+                    }
+                }
+                break;
+            case StateType.Avoidance:
+                {
+                    CurrentMaxSpeed = maxPathSpeed;
+                    SteeringToAvoidance();
+                    HandleThrottleAndBreak();
+                }
+                break;
+            default:
+                break;
+        }
+
+        #region Original Solution
+        //// steering
+        //float leftOrRight = AngleDir(transform.forward, currentTargetWaypoint - transform.position, transform.up);
+        //if (leftOrRight > 0)
+        //    controller.horizontalInput = 1f;
+        //else
+        //    controller.horizontalInput = -1f;
+        //if (leftOrRight == 0)
+        //    controller.horizontalInput = 0;
+        //if(emergencyAvoidance/* && emergencyAvoidanceTimer > 0*/)
+        //{
+        //    controller.horizontalInput = 1;
+        //    //    emergencyAvoidanceTimer -= Time.deltaTime;
+        //}
+        ////else
+        ////{
+        ////    emergencyAvoidanceTimer = EmergencyAvoidanceTimeSpan;
+        ////    emergencyAvoidance = false;
+        ////}
+
+        //// throttle
+        ////if ( /*|| !isMoving/*|| (transform.position - nextWaypoint).sqrMagnitude < 20f*/)
+        ////{
+        ////    isMoving = false;
+        ////}
+        ////else
+        ////{
+        ////    controller.verticalInput = 1f;
+        ////}
+        //if (drivingTrafficLights || controller.currentSpeedSqr > CurrentMaxSpeed * CurrentMaxSpeed || stopByCar || drivingBehindCar && carInFront != null && controller.currentSpeedSqr > carInFront.currentSpeedSqr)
+        //{
+        //    isMoving = false;
+        //}
+        //else
+        //{
+        //    isMoving = true;
+        //    controller.verticalInput = 1f;
+        //}
+
+        //// break
+        //if (!isMoving)
+        //{
+        //    controller.isBreaking = true;
+        //}
+        //else
+        //{
+        //    controller.isBreaking = false;
+        //}
+        #endregion
+    }
+
+    private void DoAstern()
+    {
+        controller.horizontalInput = 0;
+        controller.verticalInput = -1f;
+        controller.isBreaking = false;
+    }
+
+    private void SteeringToTarget()
+    {
         float leftOrRight = AngleDir(transform.forward, currentTargetWaypoint - transform.position, transform.up);
         if (leftOrRight > 0)
             controller.horizontalInput = 1f;
@@ -223,48 +336,36 @@ public class Unit : MonoBehaviour, IPooledObject
             controller.horizontalInput = -1f;
         if (leftOrRight == 0)
             controller.horizontalInput = 0;
-        if(emergencyAvoidance/* && emergencyAvoidanceTimer > 0*/)
-        {
-            controller.horizontalInput = 1;
-            //    emergencyAvoidanceTimer -= Time.deltaTime;
-        }
-        //else
-        //{
-        //    emergencyAvoidanceTimer = EmergencyAvoidanceTimeSpan;
-        //    emergencyAvoidance = false;
-        //}
-
-        // throttle
-        //if ( /*|| !isMoving/*|| (transform.position - nextWaypoint).sqrMagnitude < 20f*/)
-        //{
-        //    isMoving = false;
-        //}
-        //else
-        //{
-        //    controller.verticalInput = 1f;
-        //}
-        if (drivingTrafficLights || controller.currentSpeedSqr > CurrentMaxSpeed * CurrentMaxSpeed || stopByCar || drivingBihindCar && carInFront != null && controller.currentSpeedSqr > carInFront.currentSpeedSqr)
-        {
-            isMoving = false;
-        }
-        else
-        {
-            isMoving = true;
-            controller.verticalInput = 1f;
-        }
-
-        // break
-        if (!isMoving)
-        {
-            controller.isBreaking = true;
-        }
-        else
-        {
-            controller.isBreaking = false;
-        }
-
     }
 
+    private void SteeringToAvoidance()
+    {
+        if(otherCar != null)
+        {
+            float leftOrRight = AngleDir(transform.forward, otherCar.transform.position - transform.position, transform.up);
+            if (leftOrRight >= 0)
+                controller.horizontalInput = -1f;
+            else
+                controller.horizontalInput = 1f;
+        }
+    }
+
+    private void HandleThrottleAndBreak()
+    {
+        if(controller.currentSpeedSqr < CurrentMaxSpeed * CurrentMaxSpeed * 0.95f)
+        {
+            controller.verticalInput = 1f;
+            controller.isBreaking = false;
+        }
+        else
+        {
+            controller.verticalInput = 0;
+            controller.isBreaking = true;
+        }
+    }
+    #endregion
+
+    #region Utils
     private float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
     {
         Vector3 perp = Vector3.Cross(fwd, targetDir);
@@ -284,72 +385,195 @@ public class Unit : MonoBehaviour, IPooledObject
         }
     }
 
+    private int FindClosestPathPositionIndexInUnitFront(Path path)
+    {
+        int currentClosestIndex = 0;
+        Transform ClosestPathPosition = null;
+        for (int i = 0; i < path.pathPositions.Count; i++)
+        {
+            Transform CurrentIndexPosition = path.pathPositions[i];
+            if (Vector3.Dot(transform.forward, (CurrentIndexPosition.position - transform.position).normalized) > 0)
+            {
+                if (ClosestPathPosition == null)
+                {
+                    currentClosestIndex = i;
+                    ClosestPathPosition = CurrentIndexPosition;
+                }
+
+                if ((CurrentIndexPosition.position - transform.position).sqrMagnitude < (ClosestPathPosition.position - transform.position).sqrMagnitude)
+                {
+                    currentClosestIndex = i;
+                    ClosestPathPosition = CurrentIndexPosition;
+                }
+            }
+        }
+
+        return currentClosestIndex;
+    }
+    #endregion
+
+    #region Environment Interaction
+    private void OnCollisionStay(Collision collision)
+    {
+        if(collision.collider.CompareTag("Car"))
+        {
+            Debug.Log("We have car collision!");
+            float carDirection = Vector3.Angle(transform.right, (collision.collider.transform.position - transform.position).normalized);
+            isOnCollision = true;
+        }
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        isOnCollision = false;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Car") && !other.isTrigger)
-        {
-            float direction = Vector3.Angle(transform.forward, other.transform.forward);
-            float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
-            if (direction < 50)
-            {
-                drivingBihindCar = true;
-                carInFront = other.GetComponentInParent<VehicleController>();
-            }
-            if (direction > 50 && direction < 100 && carDirection < 100 && carDirection > 45)
-            {
-                stopByCar = true;
-            }
+        #region Original Solution
+        //if (other.CompareTag("Car") && !other.isTrigger)
+        //{
+        //    float direction = Vector3.Angle(transform.forward, other.transform.forward);
+        //    float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
+        //    if (direction < 65)
+        //    {
+        //        currentState = StateType.MovingBehindCar;
+        //        otherCar = other.GetComponentInParent<VehicleController>();
+        //    }
+        //    if (direction > 50 && direction < 100 && carDirection < 100 && carDirection > 45)
+        //    {
+        //        currentState = StateType.StopByCar;
+        //    }
 
-        }
-        else if (other.CompareTag("Car") && Vector3.Angle(transform.forward, other.transform.forward) > 100)
-        {
-            if(other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr)
-            {
-                stopByCar = true;
-            }
-            else
-            {
-                emergencyAvoidance = true;
-            }
-        }
+        //}
+        //else if (other.CompareTag("Car") && other.isTrigger && Vector3.Angle(transform.forward, other.transform.forward) > 100)
+        //{
+        //    if(other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr)
+        //    {
+        //        currentState = StateType.StopByCar;
+        //    }
+        //    else
+        //    {
+        //        currentState = StateType.Avoidance;
+        //        otherCar = other.GetComponentInParent<VehicleController>();
+        //    }
+        //}
+        #endregion
 
-        if (other.CompareTag("TrafficLight") && !drivingTrafficLights)
+        if (other.CompareTag("TrafficLight") && !(currentState == StateType.StopByTrafficLight))
         {
             TrafficLight trafic = other.GetComponent<TrafficLight>();
             if (Vector3.Angle(-trafic.transform.forward, transform.forward) < 25)
             {
                 if (!trafic.isGreen)
                 {
-                    drivingTrafficLights = true;
-                    isMoving = false;
+                    currentState = StateType.StopByTrafficLight;
                     trafic.lightChange += StartMoving;
                 }
             }
         }
     }
 
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Car"))
+        {
+            float direction = Vector3.Angle(transform.forward, other.transform.forward);
+            float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
+            otherCar = other.GetComponentInParent<VehicleController>();
+            if (direction < 65 && !other.isTrigger)
+            {
+                currentState = StateType.MovingBehindCar;
+            }
+            if (direction > 65 && direction < 110 && carDirection < 135 && carDirection > 45 && !other.isTrigger)
+            {
+                currentState = StateType.StopByCar;
+            }
+            if (direction > 110)
+            {
+                if (other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr)
+                {
+                    currentState = StateType.StopByCar;
+                }
+                else
+                {
+                    currentState = StateType.Avoidance;
+                }
+            }
+
+        }
+    }
+
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Car") && !other.isTrigger)
-        {
-            StopCoroutine(StartMovingAfterWait(0.3f));
-            StartCoroutine(StartMovingAfterWait(0.3f));
-            drivingBihindCar = false;
-        }
-        else if(other.CompareTag("Car") && other.isTrigger)
-        {
-            StopCoroutine(StartMovingAfterWait(0.3f));
-            StartCoroutine(StartMovingAfterWait(0.3f));
-            StopCoroutine(StopAvoidanceAfterTime(0.5f));
-            StartCoroutine(StopAvoidanceAfterTime(0.5f));
+        #region Original Solution
+        //if (other.CompareTag("Car") && !other.isTrigger)
+        //{
+        //    switch (currentState)
+        //    {
+        //        case StateType.Moving:
+        //            break;
+        //        case StateType.MovingBehindCar:
+        //            currentState = StateType.Moving;
+        //            otherCar = null;
+        //            break;
+        //        case StateType.StopByCar:
+        //            StopCoroutine(StartMovingAfterWait(0.3f));
+        //            StartCoroutine(StartMovingAfterWait(0.3f));
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
+        //else if(other.CompareTag("Car") && other.isTrigger)
+        //{
+        //    switch (currentState)
+        //    {
+        //        case StateType.StopByCar:
+        //            StopCoroutine(StartMovingAfterWait(0.3f));
+        //            StartCoroutine(StartMovingAfterWait(0.3f));
+        //            break;
+        //        case StateType.Avoidance:
+        //            StopCoroutine(StartMovingAfterWait(0.3f));
+        //            StartCoroutine(StartMovingAfterWait(0.3f));
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //}
+        #endregion
 
+        if (other.CompareTag("Car"))
+        {
+            if(otherCar != null && otherCar.name == other.name)
+            {
+                switch (currentState)
+                {
+                    case StateType.Moving:
+                        break;
+                    case StateType.MovingBehindCar:
+                        currentState = StateType.Moving;
+                        break;
+                    case StateType.StopByCar:
+                        StopCoroutine(StartMovingAfterWait(0.3f));
+                        StartCoroutine(StartMovingAfterWait(0.3f));
+                        break;
+                    case StateType.Avoidance:
+                        StopCoroutine(StartMovingAfterWait(0.3f));
+                        StartCoroutine(StartMovingAfterWait(0.3f));
+                        break;
+                    default:
+                        break;
+                }
+                otherCar = null;
+            }
         }
         else if (other.CompareTag("TrafficLight"))
         {
             TrafficLight trafic = other.GetComponent<TrafficLight>();
             trafic.lightChange -= StartMoving;
-            drivingTrafficLights = false;
+            // Demo
+            currentState = StateType.Moving;
+            //--
         }
     }
 
@@ -357,35 +581,29 @@ public class Unit : MonoBehaviour, IPooledObject
     {
         if (isGreen)
         {
-            drivingTrafficLights = false;
+            currentState = StateType.Moving;
         }
     }
 
     IEnumerator StartMovingAfterWait(float seconds)
     {
         yield return new WaitForSeconds(seconds);
-        stopByCar = false;
+        currentState = StateType.Moving;
+        otherCar = null;
     }
-    
-    IEnumerator StopAvoidanceAfterTime(float seconds)
-    {
-        yield return new WaitForSeconds(seconds);
-        emergencyAvoidance = false;
-    }
+    #endregion
 
+    #region Editor Debugging
     private void OnDrawGizmos()
     {
         if (path != null)
         {
             for (int i = currentPathIndex; i < path.Count; i++)
             {
-                //int j = 1;
-                //if (i == currentPathIndex)
-                //    j = (currentPathPositionIndex == 0) ? 1 : currentPathPositionIndex;
+
                 for (int j = 0; j < path[i].pathPositions.Count; j++)
                 {
                     Gizmos.color = new Color(randomGizmosColor.x, randomGizmosColor.y, randomGizmosColor.z, 1f);
-
 
                     if ((i > currentPathIndex && j != 0) || (i == currentPathIndex && j > currentPathPositionIndex))
                     {
@@ -397,18 +615,10 @@ public class Unit : MonoBehaviour, IPooledObject
                         Gizmos.DrawCube(path[i].pathPositions[j].position, Vector3.one * 0.4f);
                         Gizmos.DrawLine(transform.position, path[i].pathPositions[j].position);
                     }
-
-                    //if (j == pathPositionIndex)
-                    //{
-                    //    //Gizmos.DrawLine(transform.position, path[i].pathPositions[j].position);
-                    //}
-                    //else
-                    //{
-                    //    Gizmos.DrawLine(path[i].pathPositions[j - 1].position, path[i].pathPositions[j].position);
-                    //}
                 }
 
             }
         }
     }
+    #endregion
 }
