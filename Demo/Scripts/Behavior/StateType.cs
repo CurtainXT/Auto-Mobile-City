@@ -9,5 +9,6 @@ public enum StateType
     StopByTrafficLight,
     StopByCar,
     Avoidance,
+    Astern,
     NoTarget
 }

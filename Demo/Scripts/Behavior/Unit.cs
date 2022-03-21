@@ -262,20 +262,9 @@ public class Unit : MonoBehaviour, IPooledObject
                 {
                     if (otherCar != null && otherCar.gameObject.activeSelf)
                     {
-                        if (isOnCollision)
-                        {
-                            if(isShow)
-                            {
-                                StopCoroutine(DoAstern(0.5f));
-                                StartCoroutine(DoAstern(0.5f));
-                            }
-                        }
-                        else
-                        {
-                            CurrentMaxSpeed = 0;
-                            SteeringToTarget();
-                            HandleThrottleAndBreak();
-                        }
+                        CurrentMaxSpeed = 0;
+                        SteeringToTarget();
+                        HandleThrottleAndBreak();
                     }
                     else
                     {
@@ -294,6 +283,15 @@ public class Unit : MonoBehaviour, IPooledObject
                     else
                     {
                         currentState = StateType.Moving;
+                    }
+                }
+                break;
+            case StateType.Astern:
+                {
+                    if (isShow)
+                    {
+                        StopCoroutine(DoAstern(1f));
+                        StartCoroutine(DoAstern(1f));
                     }
                 }
                 break;
@@ -453,14 +451,14 @@ public class Unit : MonoBehaviour, IPooledObject
         if(collision.collider.CompareTag("Car"))
         {
             Debug.Log("We have car collision!");
-            float carDirection = Vector3.Angle(transform.right, (collision.collider.transform.position - transform.position).normalized);
-            isOnCollision = true;
+            //float carDirection = Vector3.Angle(transform.right, (collision.collider.transform.position - transform.position).normalized);
+            currentState = StateType.Astern;
         }
     }
-    private void OnCollisionExit(Collision collision)
-    {
-        isOnCollision = false;
-    }
+    //private void OnCollisionExit(Collision collision)
+    //{
+    //    currentState = StateType.Moving;
+    //}
 
     private void OnTriggerEnter(Collider other)
     {
@@ -510,29 +508,33 @@ public class Unit : MonoBehaviour, IPooledObject
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Car"))
+        if (other.CompareTag("Car") && currentState != StateType.Astern)
         {
             float direction = Vector3.Angle(transform.forward, other.transform.forward);
             float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
-            otherCar = other.GetComponentInParent<VehicleController>();
-            if (direction < 65 && !other.isTrigger)
+
+            if (direction < 45 && !other.isTrigger)
             {
                 currentState = StateType.MovingBehindCar;
+                otherCar = other.GetComponentInParent<VehicleController>();
             }
-            if (direction > 65 && direction < 110 && carDirection < 135 && carDirection > 45 && !other.isTrigger)
+            if (direction > 45 && direction < 135 && carDirection < 135 && carDirection > 45 && !other.isTrigger)
             {
                 currentState = StateType.StopByCar;
+                otherCar = other.GetComponentInParent<VehicleController>();
             }
-            if (direction > 110)
+            if (direction > 135 && direction < 45)
             {
-                if (other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr && !other.isTrigger)
-                {
-                    currentState = StateType.StopByCar;
-                }
-                else
-                {
-                    currentState = StateType.Avoidance;
-                }
+                currentState = StateType.Avoidance;
+                otherCar = other.GetComponentInParent<VehicleController>();
+                //if (other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr && !other.isTrigger)
+                //{
+                //    currentState = StateType.StopByCar;
+                //}
+                //else
+                //{
+                //    currentState = StateType.Avoidance;
+                //}
             }
 
         }
