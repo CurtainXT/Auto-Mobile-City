@@ -25,6 +25,7 @@ public class Unit : MonoBehaviour, IPooledObject
     // Demo
     public float LifeCount = 30;
     public bool isShow = true;
+    public float stopByCarTimer = 0;
     // --
     [HideInInspector]
     public float CurrentMaxSpeed
@@ -265,10 +266,17 @@ public class Unit : MonoBehaviour, IPooledObject
                         CurrentMaxSpeed = 0;
                         SteeringToTarget();
                         HandleThrottleAndBreak();
+                        stopByCarTimer += Time.deltaTime;
+                        if(stopByCarTimer > 5f)
+                        {
+                            currentState = StateType.Astern;
+                            stopByCarTimer = 0;
+                        }
                     }
                     else
                     {
                         currentState = StateType.Moving;
+                        stopByCarTimer = 0;
                     }
                 }
                 break;
