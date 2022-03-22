@@ -76,6 +76,7 @@ public class Unit : MonoBehaviour, IPooledObject
         // 给个初始目标
         LifeCount = UnityEngine.Random.Range(30, 60);
         controller.defaultMaxSpeed = UnityEngine.Random.Range(defaultMaxSpeedRange.x, defaultMaxSpeedRange.y);
+        currentState = StateType.NoTarget;
         FindNextTarget();
         path.Clear();
         randomGizmosColor = new Vector3(UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f), UnityEngine.Random.Range(0, 1f));
@@ -615,23 +616,22 @@ public class Unit : MonoBehaviour, IPooledObject
             //float direction = Vector3.Angle(transform.forward, other.transform.forward);
             //float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
 
-
+            otherCar = other.GetComponentInParent<VehicleController>();
 
             if (/*direction < 45 || direction > 135 && carDirection < 135 && carDirection > 45 &&*/IsInFrontSight(other.transform) && IsInSameDirection(other.transform.forward) && !other.isTrigger)
             {
                 currentState = StateType.MovingBehindCar;
-                otherCar = other.GetComponentInParent<VehicleController>();
+
             }
             else if (/*direction > 45 && direction < 135 && carDirection < 135 && carDirection > 45 &&*/IsInFrontSight(other.transform) && !IsInSameDirection(other.transform.forward) && !other.isTrigger)
             {
                 currentState = StateType.StopByCar;
-                otherCar = other.GetComponentInParent<VehicleController>();
             }
             else if (/*direction > 155 || direction < 25 && carDirection > 135 || carDirection < 45*/IsInFrontSight(other.transform) && other.isTrigger)
             {
                 //currentState = StateType.StartAvoidance;
                 //otherCar = other.GetComponentInParent<VehicleController>();
-                if (other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr)
+                if (otherCar.currentSpeedSqr > controller.currentSpeedSqr)
                 {
                     currentState = StateType.StopByCar;
                 }
@@ -639,7 +639,6 @@ public class Unit : MonoBehaviour, IPooledObject
                 {
                     currentState = StateType.StartAvoidance;
                 }
-                otherCar = other.GetComponentInParent<VehicleController>();
             }
 
         }
