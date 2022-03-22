@@ -629,16 +629,17 @@ public class Unit : MonoBehaviour, IPooledObject
             }
             else if (/*direction > 155 || direction < 25 && carDirection > 135 || carDirection < 45*/IsInFrontSight(other.transform) && other.isTrigger)
             {
-                currentState = StateType.StartAvoidance;
+                //currentState = StateType.StartAvoidance;
+                //otherCar = other.GetComponentInParent<VehicleController>();
+                if (other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr)
+                {
+                    currentState = StateType.StopByCar;
+                }
+                else
+                {
+                    currentState = StateType.StartAvoidance;
+                }
                 otherCar = other.GetComponentInParent<VehicleController>();
-                //if (other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr && !other.isTrigger)
-                //{
-                //    currentState = StateType.StopByCar;
-                //}
-                //else
-                //{
-                //    currentState = StateType.Avoidance;
-                //}
             }
 
         }
