@@ -8,6 +8,8 @@ using System;
 public class Unit : MonoBehaviour, IPooledObject
 {
     public bool randomDestination = true;
+    public bool waitForTrafficLight = true;
+
     public Transform target;
     public VehicleController controller;
     List<Path> path = new List<Path>();
@@ -44,7 +46,7 @@ public class Unit : MonoBehaviour, IPooledObject
     }
 
     [SerializeField]
-    StateType currentState = StateType.Moving;
+    StateType currentState = StateType.NoTarget;
     [SerializeField]
     private VehicleController otherCar;
     [SerializeField]
@@ -218,6 +220,50 @@ public class Unit : MonoBehaviour, IPooledObject
             #endregion
         }
     }
+
+
+    private void FixCircling()
+    {
+        // 如果目标点在正坐或正右反向 车辆可能会一直转圈
+        float targetAngle = Vector3.Angle(transform.forward, currentTargetWaypoint - transform.position);
+        if (targetAngle > 60 && targetAngle < 110)
+        {
+            Vector3 nextTargetWaypoint = new Vector3();
+            int nextPathPositionIndex = currentPathPositionIndex;
+            int nextPathIndex = currentPathIndex;
+
+            // 获取接下来的若干个路径点
+            int iterNum = 2;
+            for (int i = 0; i < iterNum; i++)
+            {
+                nextPathPositionIndex++;
+                if (nextPathPositionIndex >= path[nextPathIndex].pathPositions.Count)
+                {
+                    nextPathPositionIndex = 0;
+                    nextPathIndex++;
+                    if (nextPathIndex >= path.Count)
+                    {
+                        //StopCoroutine(FollowPath());
+                        //currentState = StateType.NoTarget;
+                        //FindNextTarget();
+                        break;
+                    }
+                }
+
+                nextTargetWaypoint = path[nextPathIndex].pathPositions[nextPathPositionIndex].position;
+                Vector3 selfToNextTarget = (nextTargetWaypoint - transform.position);
+                if (IsInSameDirection(selfToNextTarget))
+                {
+
+                    currentTargetWaypoint = nextTargetWaypoint;
+                    currentPathIndex = nextPathIndex;
+                    currentPathPositionIndex = nextPathPositionIndex;
+                    return;
+                }
+            }
+        }
+    }
+
     #endregion
 
     #region Controller Handler
@@ -230,6 +276,8 @@ public class Unit : MonoBehaviour, IPooledObject
                     CurrentMaxSpeed = maxPathSpeed;
                     SteeringToTarget();
                     HandleThrottleAndBreak();
+
+                    FixCircling();
                 }
                 break;
             case StateType.MovingBehindCar:
@@ -280,13 +328,13 @@ public class Unit : MonoBehaviour, IPooledObject
                     }
                 }
                 break;
-            case StateType.Avoidance:
+            case StateType.StartAvoidance:
                 {
                     if (otherCar != null && otherCar.gameObject.activeSelf)
                     {
                         CurrentMaxSpeed = maxPathSpeed;
-                        SteeringToAvoidance();
-                        HandleThrottleAndBreak();
+                        StopCoroutine(DoAvoidance(0.3f));
+                        StartCoroutine(DoAvoidance(0.3f));
                     }
                     else
                     {
@@ -294,13 +342,26 @@ public class Unit : MonoBehaviour, IPooledObject
                     }
                 }
                 break;
-            case StateType.Astern:
+            case StateType.Avoidance:
+                {
+                    SteeringToAvoidance();
+                    HandleThrottleAndBreak();
+                }
+                break;
+            case StateType.StartAstern:
                 {
                     if (isShow)
                     {
                         StopCoroutine(DoAstern(1f));
                         StartCoroutine(DoAstern(1f));
                     }
+                }
+                break;
+            case StateType.Astern:
+                {
+                    controller.horizontalInput = 0;
+                    controller.verticalInput = -1f;
+                    controller.isBreaking = false;
                 }
                 break;
             default:
@@ -360,9 +421,15 @@ public class Unit : MonoBehaviour, IPooledObject
 
     private IEnumerator DoAstern(float Time)
     {
-        controller.horizontalInput = 0;
-        controller.verticalInput = -1f;
-        controller.isBreaking = false;
+        currentState = StateType.Astern;
+
+        yield return new WaitForSeconds(Time);
+        currentState = StateType.Moving;
+    }
+
+    private IEnumerator DoAvoidance(float Time)
+    {
+        currentState = StateType.Avoidance;
 
         yield return new WaitForSeconds(Time);
         currentState = StateType.Moving;
@@ -381,13 +448,13 @@ public class Unit : MonoBehaviour, IPooledObject
 
     private void SteeringToAvoidance()
     {
-        if(otherCar != null)
+        if(otherCar != null && otherCar.gameObject.activeSelf)
         {
-            float leftOrRight = AngleDir(transform.forward, otherCar.transform.position - transform.position, transform.up);
-            if (leftOrRight >= 0)
-                controller.horizontalInput = -1f;
-            else
+            float leftOrRight = AngleDir(transform.forward, transform.position - otherCar.transform.position, transform.up);
+            if (leftOrRight > 0)
                 controller.horizontalInput = 1f;
+            else
+                controller.horizontalInput = -1f;
         }
     }
 
@@ -451,6 +518,23 @@ public class Unit : MonoBehaviour, IPooledObject
 
         return currentClosestIndex;
     }
+
+    private bool IsInFrontSight(Transform other)
+    {
+
+        float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
+        float frontOrRear = AngleDir(transform.right, (transform.position - other.transform.position), Vector3.up);
+
+        return (carDirection < 135 && carDirection > 45 && frontOrRear > 0);
+    }
+
+    private bool IsInSameDirection(Vector3 otherForward)
+    {
+        float direction = Vector3.Angle(transform.forward, otherForward);
+
+        return direction < 45;
+    }
+
     #endregion
 
     #region Environment Interaction
@@ -460,13 +544,23 @@ public class Unit : MonoBehaviour, IPooledObject
         {
             Debug.Log("We have car collision!");
             //float carDirection = Vector3.Angle(transform.right, (collision.collider.transform.position - transform.position).normalized);
-            currentState = StateType.Astern;
+            //float direction = Vector3.Angle(transform.forward, collision.collider.transform.forward);
+            float carDirection = Vector3.Angle(transform.right, (collision.collider.transform.position - transform.position).normalized);
+            if (IsInFrontSight(collision.transform))
+            {
+                currentState = StateType.StartAstern;
+            }
+            else if (!IsInFrontSight(collision.transform))
+            {
+                currentState = StateType.StartAvoidance;
+                otherCar = collision.gameObject.GetComponent<VehicleController>();
+            }
         }
     }
-    //private void OnCollisionExit(Collision collision)
-    //{
-    //    currentState = StateType.Moving;
-    //}
+    private void OnCollisionExit(Collision collision)
+    {
+        
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -500,7 +594,7 @@ public class Unit : MonoBehaviour, IPooledObject
         //}
         #endregion
 
-        if (other.CompareTag("TrafficLight") && !(currentState == StateType.StopByTrafficLight))
+        if (other.CompareTag("TrafficLight") && waitForTrafficLight)
         {
             TrafficLight trafic = other.GetComponent<TrafficLight>();
             if (Vector3.Angle(-trafic.transform.forward, transform.forward) < 25)
@@ -516,24 +610,26 @@ public class Unit : MonoBehaviour, IPooledObject
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Car") && currentState != StateType.Astern)
+        if (other.CompareTag("Car") && currentState == StateType.Moving)
         {
-            float direction = Vector3.Angle(transform.forward, other.transform.forward);
-            float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
+            //float direction = Vector3.Angle(transform.forward, other.transform.forward);
+            //float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
 
-            if (direction < 45 && !other.isTrigger)
+
+
+            if (/*direction < 45 || direction > 135 && carDirection < 135 && carDirection > 45 &&*/IsInFrontSight(other.transform) && IsInSameDirection(other.transform.forward) && !other.isTrigger)
             {
                 currentState = StateType.MovingBehindCar;
                 otherCar = other.GetComponentInParent<VehicleController>();
             }
-            if (direction > 45 && direction < 135 && carDirection < 135 && carDirection > 45 && !other.isTrigger)
+            else if (/*direction > 45 && direction < 135 && carDirection < 135 && carDirection > 45 &&*/IsInFrontSight(other.transform) && !IsInSameDirection(other.transform.forward) && !other.isTrigger)
             {
                 currentState = StateType.StopByCar;
                 otherCar = other.GetComponentInParent<VehicleController>();
             }
-            if (direction > 135 && direction < 45)
+            else if (/*direction > 155 || direction < 25 && carDirection > 135 || carDirection < 45*/IsInFrontSight(other.transform) && other.isTrigger)
             {
-                currentState = StateType.Avoidance;
+                currentState = StateType.StartAvoidance;
                 otherCar = other.GetComponentInParent<VehicleController>();
                 //if (other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr && !other.isTrigger)
                 //{
@@ -599,10 +695,6 @@ public class Unit : MonoBehaviour, IPooledObject
                         currentState = StateType.Moving;
                         break;
                     case StateType.StopByCar:
-                        StopCoroutine(StartMovingAfterWait(0.3f));
-                        StartCoroutine(StartMovingAfterWait(0.3f));
-                        break;
-                    case StateType.Avoidance:
                         StopCoroutine(StartMovingAfterWait(0.3f));
                         StartCoroutine(StartMovingAfterWait(0.3f));
                         break;

@@ -127,8 +127,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9b04bfd86e0e5c4fbc1ccc0a323dfba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMaxSpeed: 10
-  defaultMaxSteerAngle: 32
+  defaultMaxSpeed: 18
+  defaultMaxSteerAngle: 35
   horizontalInput: 0
   verticalInput: 0
   isBreaking: 0
@@ -158,15 +158,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomDestination: 1
+  waitForTrafficLight: 1
   target: {fileID: 0}
   controller: {fileID: 217891751121479268}
   bNeedPath: 1
   defaultMaxSpeedRange: {x: 8, y: 10}
   maxPathSpeed: 5
   currentMaxSpeed: 0
-  LifeCount: 30
+  LifeCount: 3000
   isShow: 1
-  currentState: 0
+  stopByCarTimer: 0
+  currentState: 8
   otherCar: {fileID: 0}
   isOnCollision: 0
 --- !u!65 &1598656597
@@ -180,8 +182,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.6982652, y: 0.8184756, z: 2.8177686}
-  m_Center: {x: -0.0010247014, y: 0.7441818, z: 3.7488728}
+  m_Size: {x: 1.6982652, y: 0.8184756, z: 2.7605155}
+  m_Center: {x: -0.0010252404, y: 0.7441818, z: 3.7202454}
 --- !u!1 &1654330402988669482
 GameObject:
   m_ObjectHideFlags: 0

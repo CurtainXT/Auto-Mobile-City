@@ -8,7 +8,9 @@ public enum StateType
     MovingBehindCar,
     StopByTrafficLight,
     StopByCar,
+    StartAvoidance,
     Avoidance,
+    StartAstern,
     Astern,
     NoTarget
 }
