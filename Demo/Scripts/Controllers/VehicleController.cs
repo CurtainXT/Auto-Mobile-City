@@ -2,28 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ATMC;
 
-public class VehicleController : MonoBehaviour
+public class VehicleController : ATMC_UnitController
 {
-    public float defaultMaxSpeed;
+    public float motorForce;
+    public float breakForce;
     public float defaultMaxSteerAngle;
-    public float horizontalInput;
-    public float verticalInput;
-    public bool isBreaking;
-    [HideInInspector]
-    public float currentSpeedSqr = 0;
 
-    [SerializeField]
-    private float motorForce;
-    [SerializeField]
-    private float breakForce;
-
-    //private const string HORIZONTAL = "Horizontal";
-    //private const string VERTICAL = "Vertical";
-
-
+    private float currentMotorForce;
     private float currentSteerAngle;
-
     private float currentBreakForce;
     [SerializeField]
     private WheelCollider frontLeftWheelCollider;
@@ -43,52 +31,49 @@ public class VehicleController : MonoBehaviour
     [SerializeField]
     private Transform rearRightWheelTransform;
 
-    [SerializeField]
-    private Rigidbody VehicleRig;
+
     [SerializeField]
     private Transform CenterOfMass;
     
 
     private void Start()
     {
-        VehicleRig.centerOfMass = CenterOfMass.localPosition;
+        unitRigidbody.centerOfMass = CenterOfMass.localPosition;
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+
+    private void Update()
     {
-        HandleMotor();
-
-        HandleSteering();
-
         UpdateWheelsVisual();
-
-        currentSpeedSqr = VehicleRig.velocity.sqrMagnitude;
+        currentSpeedSqr = unitRigidbody.velocity.sqrMagnitude;
     }
 
-
-
-    private void HandleMotor()
+    protected override void HandleMotor()
     {
-        rearLeftWheelCollider.motorTorque = verticalInput * motorForce;
-        rearRightWheelCollider.motorTorque = verticalInput * motorForce;
+        currentMotorForce = verticalInput * motorForce;
+    }
+
+    protected override void ApplyBreaking()
+    {
         currentBreakForce = isBreaking ? breakForce : 0;
-        ApplyBreaking();
     }
 
-    private void ApplyBreaking()
-    {
-        frontLeftWheelCollider.brakeTorque = currentBreakForce;
-        frontRightWheelCollider.brakeTorque = currentBreakForce;
-        rearLeftWheelCollider.brakeTorque = currentBreakForce;
-        rearRightWheelCollider.brakeTorque = currentBreakForce;
-    }
-
-    private void HandleSteering()
+    protected override void HandleSteering()
     {
         currentSteerAngle = defaultMaxSteerAngle * horizontalInput;
         frontLeftWheelCollider.steerAngle = currentSteerAngle;
         frontRightWheelCollider.steerAngle = currentSteerAngle;
+    }
+
+    protected override void MoveUnit()
+    {
+        rearLeftWheelCollider.motorTorque = currentMotorForce;
+        rearRightWheelCollider.motorTorque = currentMotorForce;
+
+        frontLeftWheelCollider.brakeTorque = currentBreakForce;
+        frontRightWheelCollider.brakeTorque = currentBreakForce;
+        rearLeftWheelCollider.brakeTorque = currentBreakForce;
+        rearRightWheelCollider.brakeTorque = currentBreakForce;
     }
 
     private void UpdateWheelsVisual()

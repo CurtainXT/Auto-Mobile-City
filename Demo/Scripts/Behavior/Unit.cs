@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PolyPerfect.City;
 using System;
+using ATMC;
 
 // 可以将Unit视为车辆驾驶员
 public class Unit : MonoBehaviour, IPooledObject
@@ -11,7 +12,7 @@ public class Unit : MonoBehaviour, IPooledObject
     public bool waitForTrafficLight = true;
 
     public Transform target;
-    public VehicleController controller;
+    public ATMC_UnitController controller;
     List<Path> path = new List<Path>();
     int currentPathIndex;
     int currentPathPositionIndex;
@@ -27,7 +28,7 @@ public class Unit : MonoBehaviour, IPooledObject
     // Demo
     public float LifeCount = 30;
     public bool isShow = true;
-    public float stopByCarTimer = 0;
+    private float currentStopByCarTimer = 0;
     // --
     [HideInInspector]
     public float CurrentMaxSpeed
@@ -48,33 +49,27 @@ public class Unit : MonoBehaviour, IPooledObject
     [SerializeField]
     StateType currentState = StateType.NoTarget;
     [SerializeField]
-    private VehicleController otherCar;
+    private ATMC_UnitController otherCar;
     [SerializeField]
     private bool isOnCollision;
-    #region Original Solution
-    //[SerializeField]
-    //private bool isMoving = true;
-    //[SerializeField]
-    //private bool drivingBehindCar = false;
-    //[SerializeField]
-    //private bool drivingTrafficLights = false;
-    //[SerializeField]
-    //private bool stopByCar = false;
-    //[SerializeField]
-    //private bool emergencyAvoidance = false;
-    //[SerializeField]
-    //private float emergencyAvoidanceTimer = 0;
-    #endregion
 
     // Editor
     private Vector3 randomGizmosColor;
     //--
 
     #region Spawn&Despawn
+    private void Start()
+    {
+        controller = GetComponent<ATMC_UnitController>();
+    }
+
     public void OnObjectSpawn()
     {
         // 给个初始目标
-        LifeCount = UnityEngine.Random.Range(30, 60);
+        if(controller == null)
+            controller = GetComponent<ATMC_UnitController>();
+
+        LifeCount = UnityEngine.Random.Range(30, 60); // Demo
         controller.defaultMaxSpeed = UnityEngine.Random.Range(defaultMaxSpeedRange.x, defaultMaxSpeedRange.y);
         currentState = StateType.NoTarget;
         FindNextTarget();
@@ -198,27 +193,6 @@ public class Unit : MonoBehaviour, IPooledObject
                 }
 
             }
-
-            #region Original Solution
-            //if (t.tileType == Tile.TileType.Road || t.tileType == Tile.TileType.RoadAndRail)
-            //{
-            //    if (t.verticalType == Tile.VerticalType.Bridge)
-            //    {
-            //        destination = t.transform.position + (Vector3.up * 12);
-            //    }
-            //    else
-            //    {
-            //        destination = t.transform.position;
-            //    }
-            //}
-            //}
-            //else
-            //{
-            //    //Destination of the first checkpoint
-            //    destination = checkpoints[0];
-            //    start = transform.position;
-            //}
-            #endregion
         }
     }
 
@@ -234,7 +208,7 @@ public class Unit : MonoBehaviour, IPooledObject
             int nextPathIndex = currentPathIndex;
 
             // 获取接下来的若干个路径点
-            int iterNum = 2;
+            int iterNum = 5;
             for (int i = 0; i < iterNum; i++)
             {
                 nextPathPositionIndex++;
@@ -315,27 +289,29 @@ public class Unit : MonoBehaviour, IPooledObject
                         CurrentMaxSpeed = 0;
                         SteeringToTarget();
                         HandleThrottleAndBreak();
-                        stopByCarTimer += Time.deltaTime;
-                        if(stopByCarTimer > 5f)
+                        currentStopByCarTimer += Time.deltaTime;
+                        if(currentStopByCarTimer > 3f)
                         {
                             currentState = StateType.Astern;
-                            stopByCarTimer = 0;
+                            currentStopByCarTimer = 0;
                         }
                     }
                     else
                     {
                         currentState = StateType.Moving;
-                        stopByCarTimer = 0;
+                        currentStopByCarTimer = 0;
                     }
                 }
                 break;
             case StateType.StartAvoidance:
                 {
-                    if (otherCar != null && otherCar.gameObject.activeSelf)
+                    float coroutineWaitTime = 0.3f;
+                    if (otherCar != null && otherCar.gameObject.activeSelf &&
+                        LifeCount > coroutineWaitTime * 2f)
                     {
                         CurrentMaxSpeed = maxPathSpeed;
-                        StopCoroutine(DoAvoidance(0.3f));
-                        StartCoroutine(DoAvoidance(0.3f));
+                        StopCoroutine(DoAvoidance(coroutineWaitTime));
+                        StartCoroutine(DoAvoidance(coroutineWaitTime));
                     }
                     else
                     {
@@ -351,10 +327,16 @@ public class Unit : MonoBehaviour, IPooledObject
                 break;
             case StateType.StartAstern:
                 {
-                    if (isShow)
+                    float coroutineWaitTime = 0.5f;
+                    if (otherCar != null && otherCar.gameObject.activeSelf &&
+                        LifeCount > coroutineWaitTime * 2f)
                     {
-                        StopCoroutine(DoAstern(1f));
-                        StartCoroutine(DoAstern(1f));
+                        StopCoroutine(DoAstern(coroutineWaitTime));
+                        StartCoroutine(DoAstern(coroutineWaitTime));
+                    }
+                    else
+                    {
+                        currentState = StateType.Moving;
                     }
                 }
                 break;
@@ -365,59 +347,14 @@ public class Unit : MonoBehaviour, IPooledObject
                     controller.isBreaking = false;
                 }
                 break;
+            case StateType.NoTarget:
+                {
+                    currentMaxSpeed = 0;
+                }
+                break;
             default:
                 break;
         }
-
-        #region Original Solution
-        //// steering
-        //float leftOrRight = AngleDir(transform.forward, currentTargetWaypoint - transform.position, transform.up);
-        //if (leftOrRight > 0)
-        //    controller.horizontalInput = 1f;
-        //else
-        //    controller.horizontalInput = -1f;
-        //if (leftOrRight == 0)
-        //    controller.horizontalInput = 0;
-        //if(emergencyAvoidance/* && emergencyAvoidanceTimer > 0*/)
-        //{
-        //    controller.horizontalInput = 1;
-        //    //    emergencyAvoidanceTimer -= Time.deltaTime;
-        //}
-        ////else
-        ////{
-        ////    emergencyAvoidanceTimer = EmergencyAvoidanceTimeSpan;
-        ////    emergencyAvoidance = false;
-        ////}
-
-        //// throttle
-        ////if ( /*|| !isMoving/*|| (transform.position - nextWaypoint).sqrMagnitude < 20f*/)
-        ////{
-        ////    isMoving = false;
-        ////}
-        ////else
-        ////{
-        ////    controller.verticalInput = 1f;
-        ////}
-        //if (drivingTrafficLights || controller.currentSpeedSqr > CurrentMaxSpeed * CurrentMaxSpeed || stopByCar || drivingBehindCar && carInFront != null && controller.currentSpeedSqr > carInFront.currentSpeedSqr)
-        //{
-        //    isMoving = false;
-        //}
-        //else
-        //{
-        //    isMoving = true;
-        //    controller.verticalInput = 1f;
-        //}
-
-        //// break
-        //if (!isMoving)
-        //{
-        //    controller.isBreaking = true;
-        //}
-        //else
-        //{
-        //    controller.isBreaking = false;
-        //}
-        #endregion
     }
 
     private IEnumerator DoAstern(float Time)
@@ -554,7 +491,7 @@ public class Unit : MonoBehaviour, IPooledObject
             else if (!IsInFrontSight(collision.transform))
             {
                 currentState = StateType.StartAvoidance;
-                otherCar = collision.gameObject.GetComponent<VehicleController>();
+                otherCar = collision.gameObject.GetComponent<ATMC_UnitController>();
             }
         }
     }
@@ -565,36 +502,6 @@ public class Unit : MonoBehaviour, IPooledObject
 
     private void OnTriggerEnter(Collider other)
     {
-        #region Original Solution
-        //if (other.CompareTag("Car") && !other.isTrigger)
-        //{
-        //    float direction = Vector3.Angle(transform.forward, other.transform.forward);
-        //    float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
-        //    if (direction < 65)
-        //    {
-        //        currentState = StateType.MovingBehindCar;
-        //        otherCar = other.GetComponentInParent<VehicleController>();
-        //    }
-        //    if (direction > 50 && direction < 100 && carDirection < 100 && carDirection > 45)
-        //    {
-        //        currentState = StateType.StopByCar;
-        //    }
-
-        //}
-        //else if (other.CompareTag("Car") && other.isTrigger && Vector3.Angle(transform.forward, other.transform.forward) > 100)
-        //{
-        //    if(other.GetComponent<VehicleController>().currentSpeedSqr > controller.currentSpeedSqr)
-        //    {
-        //        currentState = StateType.StopByCar;
-        //    }
-        //    else
-        //    {
-        //        currentState = StateType.Avoidance;
-        //        otherCar = other.GetComponentInParent<VehicleController>();
-        //    }
-        //}
-        #endregion
-
         if (other.CompareTag("TrafficLight") && waitForTrafficLight)
         {
             TrafficLight trafic = other.GetComponent<TrafficLight>();
@@ -613,24 +520,19 @@ public class Unit : MonoBehaviour, IPooledObject
     {
         if (other.CompareTag("Car") && currentState == StateType.Moving)
         {
-            //float direction = Vector3.Angle(transform.forward, other.transform.forward);
-            //float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
+            otherCar = other.GetComponentInParent<ATMC_UnitController>();
 
-            otherCar = other.GetComponentInParent<VehicleController>();
-
-            if (/*direction < 45 || direction > 135 && carDirection < 135 && carDirection > 45 &&*/IsInFrontSight(other.transform) && IsInSameDirection(other.transform.forward) && !other.isTrigger)
+            if (IsInFrontSight(other.transform) && IsInSameDirection(other.transform.forward) && !other.isTrigger)
             {
                 currentState = StateType.MovingBehindCar;
 
             }
-            else if (/*direction > 45 && direction < 135 && carDirection < 135 && carDirection > 45 &&*/IsInFrontSight(other.transform) && !IsInSameDirection(other.transform.forward) && !other.isTrigger)
+            else if (IsInFrontSight(other.transform) && !IsInSameDirection(other.transform.forward) && !other.isTrigger)
             {
                 currentState = StateType.StopByCar;
             }
-            else if (/*direction > 155 || direction < 25 && carDirection > 135 || carDirection < 45*/IsInFrontSight(other.transform) && other.isTrigger)
+            else if (IsInFrontSight(other.transform) && other.isTrigger)
             {
-                //currentState = StateType.StartAvoidance;
-                //otherCar = other.GetComponentInParent<VehicleController>();
                 if (otherCar.currentSpeedSqr > controller.currentSpeedSqr)
                 {
                     currentState = StateType.StopByCar;
@@ -646,43 +548,6 @@ public class Unit : MonoBehaviour, IPooledObject
 
     private void OnTriggerExit(Collider other)
     {
-        #region Original Solution
-        //if (other.CompareTag("Car") && !other.isTrigger)
-        //{
-        //    switch (currentState)
-        //    {
-        //        case StateType.Moving:
-        //            break;
-        //        case StateType.MovingBehindCar:
-        //            currentState = StateType.Moving;
-        //            otherCar = null;
-        //            break;
-        //        case StateType.StopByCar:
-        //            StopCoroutine(StartMovingAfterWait(0.3f));
-        //            StartCoroutine(StartMovingAfterWait(0.3f));
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //}
-        //else if(other.CompareTag("Car") && other.isTrigger)
-        //{
-        //    switch (currentState)
-        //    {
-        //        case StateType.StopByCar:
-        //            StopCoroutine(StartMovingAfterWait(0.3f));
-        //            StartCoroutine(StartMovingAfterWait(0.3f));
-        //            break;
-        //        case StateType.Avoidance:
-        //            StopCoroutine(StartMovingAfterWait(0.3f));
-        //            StartCoroutine(StartMovingAfterWait(0.3f));
-        //            break;
-        //        default:
-        //            break;
-        //    }
-        //}
-        #endregion
-
         if (other.CompareTag("Car"))
         {
             if(otherCar != null && otherCar.name == other.name)
