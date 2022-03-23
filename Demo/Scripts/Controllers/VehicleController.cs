@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ATMC;
 
-public class VehicleController : ATMC_UnitController
+public class VehicleController : ATMCBaseUnitController
 {
     public float motorForce;
     public float breakForce;

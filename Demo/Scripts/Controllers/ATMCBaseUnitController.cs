@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ATMC
 {
-    public abstract class ATMC_UnitController : MonoBehaviour
+    public abstract class ATMCBaseUnitController : MonoBehaviour
     {
         public float defaultMaxSpeed;
 

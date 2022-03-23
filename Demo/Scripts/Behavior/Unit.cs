@@ -13,7 +13,7 @@ namespace ATMC
         public bool waitForTrafficLight = true;
 
         public Transform target;
-        public ATMC_UnitController controller;
+        public ATMCBaseUnitController controller;
         List<Path> path = new List<Path>();
         int currentPathIndex;
         int currentPathPositionIndex;
@@ -50,7 +50,7 @@ namespace ATMC
         [SerializeField]
         StateType currentState = StateType.NoTarget;
         [SerializeField]
-        private ATMC_UnitController otherCar;
+        private ATMCBaseUnitController otherCar;
         [SerializeField]
         private bool isOnCollision;
 
@@ -61,14 +61,14 @@ namespace ATMC
         #region Spawn&Despawn
         private void Start()
         {
-            controller = GetComponent<ATMC_UnitController>();
+            controller = GetComponent<ATMCBaseUnitController>();
         }
 
         public void OnObjectSpawn()
         {
             // 给个初始目标
             if (controller == null)
-                controller = GetComponent<ATMC_UnitController>();
+                controller = GetComponent<ATMCBaseUnitController>();
 
             LifeCount = UnityEngine.Random.Range(30, 60); // Demo
             controller.defaultMaxSpeed = UnityEngine.Random.Range(defaultMaxSpeedRange.x, defaultMaxSpeedRange.y);
@@ -492,7 +492,7 @@ namespace ATMC
                 else if (!IsInFrontSight(collision.transform))
                 {
                     currentState = StateType.StartAvoidance;
-                    otherCar = collision.gameObject.GetComponent<ATMC_UnitController>();
+                    otherCar = collision.gameObject.GetComponent<ATMCBaseUnitController>();
                 }
             }
         }
@@ -521,7 +521,7 @@ namespace ATMC
         {
             if (other.CompareTag("Car") && currentState == StateType.Moving)
             {
-                otherCar = other.GetComponentInParent<ATMC_UnitController>();
+                otherCar = other.GetComponentInParent<ATMCBaseUnitController>();
 
                 if (IsInFrontSight(other.transform) && IsInSameDirection(other.transform.forward) && !other.isTrigger)
                 {

@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ATMC{
-    public class TrafficLight : MonoBehaviour
-    {
-        // Start is called before the first frame update
-        public bool isGreen;
+public class TrafficLight : MonoBehaviour
+{
+    // Start is called before the first frame update
+    public bool isGreen;
 
-        public delegate void LightChange(bool isGreen);
-        public LightChange lightChange;
-    }
+    public delegate void LightChange(bool isGreen);
+    public LightChange lightChange;
 }

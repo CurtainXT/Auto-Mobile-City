@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ATMC;
 
-public class TankController : ATMC_UnitController
+public class TankController : ATMCBaseUnitController
 {
     //坦克左边的所有轮子
     public GameObject[] LeftWheels;
