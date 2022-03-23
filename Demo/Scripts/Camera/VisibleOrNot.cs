@@ -2,23 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VisibleOrNot : MonoBehaviour
+namespace ATMC
 {
-    Unit selfUnit;
-
-    private void Start()
+    public class VisibleOrNot : MonoBehaviour
     {
-        selfUnit = GetComponentInParent<Unit>();
-    }
+        Unit selfUnit;
 
-    public void OnBecameVisible()
-    {
-        selfUnit.isShow = true;
-    }
+        private void Start()
+        {
+            selfUnit = GetComponentInParent<Unit>();
+        }
+
+        public void OnBecameVisible()
+        {
+            selfUnit.isShow = true;
+        }
 
 
-    public void OnBecameInvisible()
-    {
-        selfUnit.isShow = false;
+        public void OnBecameInvisible()
+        {
+            selfUnit.isShow = false;
+        }
     }
 }
