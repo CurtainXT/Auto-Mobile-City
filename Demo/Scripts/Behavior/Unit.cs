@@ -80,7 +80,35 @@ namespace ATMC
 
         public void DeActive()
         {
+            switch (currentState)
+            {
+                case StateType.Moving:
+                    {
+                        StopCoroutine("FollowPath");
+                    }
+                    break;
+                case StateType.StopByCar:
+                    {
+                        StopCoroutine("StartMovingAfterWait");
+                    }
+                    break;
+                case StateType.Avoidance:
+                    {
+                        StopCoroutine("DoAvoidance");
+                    }
+                    break;
+
+                case StateType.Astern:
+                    {
+                        StopCoroutine("DoAstern");
+                    }
+                    break;
+                default:
+                    break;
+            }
+            otherCar = null;
             this.gameObject.SetActive(false);
+
         }
 
         private void OnBecameVisible()
@@ -306,13 +334,11 @@ namespace ATMC
                     break;
                 case StateType.StartAvoidance:
                     {
-                        float coroutineWaitTime = 0.3f;
-                        if (otherCar != null && otherCar.gameObject.activeSelf &&
-                            LifeCount > coroutineWaitTime * 2f)
+                        if (otherCar != null && otherCar.gameObject.activeSelf)
                         {
                             CurrentMaxSpeed = maxPathSpeed;
-                            StopCoroutine(DoAvoidance(coroutineWaitTime));
-                            StartCoroutine(DoAvoidance(coroutineWaitTime));
+                            StopCoroutine(DoAvoidance(0.2f));
+                            StartCoroutine(DoAvoidance(0.2f));
                         }
                         else
                         {
@@ -328,12 +354,10 @@ namespace ATMC
                     break;
                 case StateType.StartAstern:
                     {
-                        float coroutineWaitTime = 0.5f;
-                        if (otherCar != null && otherCar.gameObject.activeSelf &&
-                            LifeCount > coroutineWaitTime * 2f)
+                        if (otherCar != null && otherCar.gameObject.activeSelf)
                         {
-                            StopCoroutine(DoAstern(coroutineWaitTime));
-                            StartCoroutine(DoAstern(coroutineWaitTime));
+                            StopCoroutine(DoAstern(0.5f));
+                            StartCoroutine(DoAstern(0.5f));
                         }
                         else
                         {
