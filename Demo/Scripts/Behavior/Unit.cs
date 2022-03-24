@@ -237,7 +237,7 @@ namespace ATMC
                 int nextPathIndex = currentPathIndex;
 
                 // 获取接下来的若干个路径点
-                int iterNum = 5;
+                int iterNum = 2;
                 for (int i = 0; i < iterNum; i++)
                 {
                     nextPathPositionIndex++;
