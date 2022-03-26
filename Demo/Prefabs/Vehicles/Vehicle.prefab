@@ -128,13 +128,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaxSpeed: 18
-  defaultMaxSteerAngle: 35
+  isBreaking: 0
   horizontalInput: 0
   verticalInput: 0
-  isBreaking: 0
   currentSpeedSqr: 0
   motorForce: 1000
   breakForce: 3000
+  defaultMaxSteerAngle: 35
   frontLeftWheelCollider: {fileID: 4082123391131174968}
   frontRightWheelCollider: {fileID: 4082123391555015035}
   rearLeftWheelCollider: {fileID: 4082123391273763833}
@@ -143,7 +143,6 @@ MonoBehaviour:
   frontRightWheelTransform: {fileID: 3181597096772177787}
   rearLeftWheelTransform: {fileID: 3434170156212394420}
   rearRightWheelTransform: {fileID: 385045231150269152}
-  VehicleRig: {fileID: 217891751121479271}
   CenterOfMass: {fileID: 4082123391877456520}
 --- !u!114 &217891751121479269
 MonoBehaviour:
@@ -158,7 +157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomDestination: 1
-  waitForTrafficLight: 1
+  waitForTrafficLight: 0
   target: {fileID: 0}
   controller: {fileID: 217891751121479268}
   bNeedPath: 1
@@ -167,7 +166,6 @@ MonoBehaviour:
   currentMaxSpeed: 0
   LifeCount: 3000
   isShow: 1
-  stopByCarTimer: 0
   currentState: 8
   otherCar: {fileID: 0}
   isOnCollision: 0
@@ -182,8 +180,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.6982652, y: 0.8184756, z: 2.7605155}
-  m_Center: {x: -0.0010252404, y: 0.7441818, z: 3.7202454}
+  m_Size: {x: 1.6946168, y: 0.8184756, z: 3.1528459}
+  m_Center: {x: 0.01882731, y: 0.74418175, z: 3.978768}
 --- !u!1 &1654330402988669482
 GameObject:
   m_ObjectHideFlags: 0

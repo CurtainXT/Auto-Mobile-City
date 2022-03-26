@@ -289,7 +289,7 @@ namespace ATMC
                         if (otherCar != null && otherCar.gameObject.activeSelf)
                         {
                             CurrentMaxSpeed = Mathf.Sqrt(otherCar.currentSpeedSqr);
-                            if ((transform.position - otherCar.transform.position).sqrMagnitude > 0.1f * controller.currentSpeedSqr ||
+                            if (/*(transform.position - otherCar.transform.position).sqrMagnitude > 0.01f * controller.currentSpeedSqr ||*/
                                 CurrentMaxSpeed <= 0.01f)
                             {
                                 CurrentMaxSpeed = 0;
@@ -319,9 +319,9 @@ namespace ATMC
                             SteeringToTarget();
                             HandleThrottleAndBreak();
                             currentStopByCarTimer += Time.deltaTime;
-                            if (currentStopByCarTimer > 3f)
+                            if (currentStopByCarTimer > 2.4f)
                             {
-                                currentState = StateType.Astern;
+                                currentState = StateType.StartAstern;
                                 currentStopByCarTimer = 0;
                             }
                         }
@@ -334,16 +334,10 @@ namespace ATMC
                     break;
                 case StateType.StartAvoidance:
                     {
-                        if (otherCar != null && otherCar.gameObject.activeSelf)
-                        {
-                            CurrentMaxSpeed = maxPathSpeed;
-                            StopCoroutine(DoAvoidance(0.2f));
-                            StartCoroutine(DoAvoidance(0.2f));
-                        }
-                        else
-                        {
-                            currentState = StateType.Moving;
-                        }
+                        CurrentMaxSpeed = maxPathSpeed;
+                        float avoidTimer = Mathf.Clamp(20f / controller.currentSpeedSqr, 0.2f, 0.6f);
+                        StopCoroutine(DoAvoidance(avoidTimer));
+                        StartCoroutine(DoAvoidance(avoidTimer));
                     }
                     break;
                 case StateType.Avoidance:
@@ -354,15 +348,8 @@ namespace ATMC
                     break;
                 case StateType.StartAstern:
                     {
-                        if (otherCar != null && otherCar.gameObject.activeSelf)
-                        {
-                            StopCoroutine(DoAstern(0.5f));
-                            StartCoroutine(DoAstern(0.5f));
-                        }
-                        else
-                        {
-                            currentState = StateType.Moving;
-                        }
+                        StopCoroutine(DoAstern(1f));
+                        StartCoroutine(DoAstern(1f));
                     }
                     break;
                 case StateType.Astern:
@@ -490,6 +477,15 @@ namespace ATMC
 
             return (carDirection < 135 && carDirection > 45 && frontOrRear > 0);
         }
+        
+        private bool IsInRearSight(Transform other)
+        {
+
+            float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
+            float frontOrRear = AngleDir(transform.right, (transform.position - other.transform.position), Vector3.up);
+
+            return (carDirection < 135 && carDirection > 45 && frontOrRear < 0);
+        }
 
         private bool IsInSameDirection(Vector3 otherForward)
         {
@@ -503,20 +499,18 @@ namespace ATMC
         #region Environment Interaction
         private void OnCollisionStay(Collision collision)
         {
-            if (collision.collider.CompareTag("Car"))
+            if (collision.collider.CompareTag("Car") && (currentState == StateType.Moving || currentState == StateType.MovingBehindCar))
             {
                 Debug.Log("We have car collision!");
-                //float carDirection = Vector3.Angle(transform.right, (collision.collider.transform.position - transform.position).normalized);
-                //float direction = Vector3.Angle(transform.forward, collision.collider.transform.forward);
-                float carDirection = Vector3.Angle(transform.right, (collision.collider.transform.position - transform.position).normalized);
+
                 if (IsInFrontSight(collision.transform))
                 {
                     currentState = StateType.StartAstern;
                 }
-                else if (!IsInFrontSight(collision.transform))
+                else if (!IsInFrontSight(collision.transform) && !IsInRearSight(collision.transform))
                 {
                     currentState = StateType.StartAvoidance;
-                    otherCar = collision.gameObject.GetComponent<ATMCBaseUnitController>();
+                    otherCar = collision.collider.GetComponentInParent<ATMCBaseUnitController>();
                 }
             }
         }
@@ -527,7 +521,7 @@ namespace ATMC
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("TrafficLight") && waitForTrafficLight)
+            if (other.CompareTag("TrafficLight") && currentState == StateType.Moving)
             {
                 TrafficLight trafic = other.GetComponent<TrafficLight>();
                 if (Vector3.Angle(-trafic.transform.forward, transform.forward) < 25)
@@ -550,13 +544,12 @@ namespace ATMC
                 if (IsInFrontSight(other.transform) && IsInSameDirection(other.transform.forward) && !other.isTrigger)
                 {
                     currentState = StateType.MovingBehindCar;
-
                 }
                 else if (IsInFrontSight(other.transform) && !IsInSameDirection(other.transform.forward) && !other.isTrigger)
                 {
                     currentState = StateType.StopByCar;
                 }
-                else if (IsInFrontSight(other.transform) && other.isTrigger)
+                else if (IsInFrontSight(other.transform)/* && other.isTrigger*/)
                 {
                     if (otherCar.currentSpeedSqr > controller.currentSpeedSqr)
                     {
