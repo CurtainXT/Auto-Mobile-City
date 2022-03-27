@@ -11,7 +11,7 @@ namespace ATMC
     {
         public bool randomDestination = true;
         public bool waitForTrafficLight = true;
-        public bool WillAvoidance = true;
+        public bool WillAvoidanceFrontCar = true;
 
         public Transform target;
         public ATMCBaseUnitController controller;
@@ -515,7 +515,7 @@ namespace ATMC
                 {
                     currentState = StateType.StartAstern;
                 }
-                else if (!IsInFrontSight(collision.transform) && !IsInRearSight(collision.transform) && WillAvoidance)
+                else if (!IsInFrontSight(collision.transform) && !IsInRearSight(collision.transform))
                 {
                     currentState = StateType.StartAvoidance;
                     otherCar = collision.collider.GetComponentInParent<ATMCBaseUnitController>();
@@ -557,7 +557,7 @@ namespace ATMC
                 {
                     currentState = StateType.StopByCar;
                 }
-                else if (IsInFrontSight(other.transform) && WillAvoidance/* && other.isTrigger*/)
+                else if (IsInFrontSight(other.transform) && WillAvoidanceFrontCar/* && other.isTrigger*/)
                 {
                     if (otherCar.currentSpeedSqr > controller.currentSpeedSqr)
                     {
