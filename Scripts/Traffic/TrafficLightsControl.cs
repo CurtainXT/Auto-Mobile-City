@@ -38,18 +38,22 @@ public class TrafficLightsControl : MonoBehaviour
 
         foreach (TrafficLight light in firstLights)
         {
-            light.GetComponent<Renderer>().materials[1].SetColor("_EmissionColor", firstColor);
-            light.isGreen = firstOn;
-            light.lightChange?.Invoke(light.isGreen);
+            if(light != null)
+            {
+                light.GetComponent<Renderer>().materials[1].SetColor("_EmissionColor", firstColor);
+                light.isGreen = firstOn;
+                light.lightChange?.Invoke(light.isGreen);
+            }
         }
 
         foreach (TrafficLight light in secondLights)
         {
-            light.GetComponent<Renderer>().materials[1].SetColor("_EmissionColor", secondColor);
-            light.isGreen = !firstOn;
-            light.lightChange?.Invoke(light.isGreen);
+            if(light != null)
+            {
+                light.GetComponent<Renderer>().materials[1].SetColor("_EmissionColor", secondColor);
+                light.isGreen = !firstOn;
+                light.lightChange?.Invoke(light.isGreen);
+            }
         }
-
-
     }
 }

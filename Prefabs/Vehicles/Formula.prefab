@@ -290,7 +290,7 @@ Transform:
   m_GameObject: {fileID: 1317935177528374}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.073, z: 0}
-  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_Children:
   - {fileID: 4552383967271718}
   - {fileID: 8838151858296754339}
@@ -355,6 +355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   randomDestination: 1
   waitForTrafficLight: 1
+  WillAvoidanceFrontCar: 1
   target: {fileID: 0}
   controller: {fileID: 0}
   bNeedPath: 1

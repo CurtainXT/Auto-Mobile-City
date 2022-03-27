@@ -13,6 +13,9 @@ namespace ATMC
         public bool waitForTrafficLight = true;
         public bool WillAvoidanceFrontCar = true;
 
+        public float AsternTime = 2.5f;
+        public float StopWaitToAsternTime = 2f;
+
         public Transform target;
         public ATMCBaseUnitController controller;
         List<Path> path = new List<Path>();
@@ -21,9 +24,9 @@ namespace ATMC
         Vector3 currentTargetWaypoint;
         [HideInInspector]
         public bool bNeedPath = true;
-
+        [HideInInspector]
         public Vector2 defaultMaxSpeedRange;
-        public float AsternTime = 2.5f;
+
         [HideInInspector]
         public float maxPathSpeed = 5f;
         [SerializeField]
@@ -319,7 +322,7 @@ namespace ATMC
                             SteeringToTarget();
                             HandleThrottleAndBreak();
                             currentStopByCarTimer += Time.deltaTime;
-                            if (currentStopByCarTimer > 2.4f)
+                            if (currentStopByCarTimer > StopWaitToAsternTime)
                             {
                                 currentState = StateType.StartAstern;
                                 currentStopByCarTimer = 0;
@@ -509,7 +512,7 @@ namespace ATMC
             {
                 Debug.Log("We have car collision!");
 
-                if (IsInFrontSight(collision.transform))
+                if (IsInFrontSight(collision.transform) && !IsInSameDirection(collision.transform.forward))
                 {
                     currentState = StateType.StartAstern;
                 }

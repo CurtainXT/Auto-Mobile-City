@@ -6,6 +6,9 @@ namespace ATMC
 {
     public class UnitSpawner : MonoBehaviour
     {
+        public bool isRandomSpawner = false;
+        public string[] RandomPoolTagsPool;
+
         public string poolTag;
         public float spawnTimeDelay;
 
@@ -24,6 +27,10 @@ namespace ATMC
             // Demo
             if (spawnTimer <= 0 && pool != null)
             {
+                if(isRandomSpawner)
+                {
+                    poolTag = RandomPoolTagsPool[Random.Range(0, RandomPoolTagsPool.Length - 1)];
+                }
                 ObjectPool.Instance.SpawnFromPool(poolTag, this.transform.position, this.transform.rotation);
                 spawnTimer = spawnTimeDelay;
             }
