@@ -272,7 +272,7 @@ namespace ATMC
 
         #endregion
 
-        #region Controller Handler
+        #region State Handler
         private void HandleStateBehavior()
         {
             switch (currentState)
@@ -339,7 +339,7 @@ namespace ATMC
                         if (this.gameObject.activeSelf)
                         {
                             CurrentMaxSpeed = maxPathSpeed;
-                            float avoidTimer = Mathf.Clamp(20f / controller.currentSpeedSqr, 0.2f, 0.6f);
+                            float avoidTimer = Mathf.Clamp(16f / controller.currentSpeedSqr, 0.2f, 0.6f);
                             StopCoroutine(DoAvoidance(avoidTimer));
                             StartCoroutine(DoAvoidance(avoidTimer));
                         }
@@ -483,7 +483,7 @@ namespace ATMC
             float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
             float frontOrRear = AngleDir(transform.right, (transform.position - other.transform.position), Vector3.up);
 
-            return (carDirection < 135 && carDirection > 45 && frontOrRear > 0);
+            return (carDirection < 145 && carDirection > 55 && frontOrRear > 0);
         }
         
         private bool IsInRearSight(Transform other)
@@ -492,7 +492,7 @@ namespace ATMC
             float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
             float frontOrRear = AngleDir(transform.right, (transform.position - other.transform.position), Vector3.up);
 
-            return (carDirection < 135 && carDirection > 45 && frontOrRear < 0);
+            return (carDirection < 145 && carDirection > 55 && frontOrRear < 0);
         }
 
         private bool IsInSameDirection(Vector3 otherForward)

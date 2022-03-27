@@ -86,7 +86,7 @@ MonoBehaviour:
   controller: {fileID: 0}
   bNeedPath: 1
   defaultMaxSpeedRange: {x: 10, y: 10.5}
-  AsternTime: 2.5
+  AsternTime: 2
   maxPathSpeed: 5
   currentMaxSpeed: 0
   LifeCount: 35
@@ -134,8 +134,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2.5699089, y: 2.9612885, z: 3.2835493}
-  m_Center: {x: -0.011561036, y: 1.4873519, z: 6.0468307}
+  m_Size: {x: 2.5699089, y: 2.961288, z: 2.1425881}
+  m_Center: {x: -0.011561066, y: 1.4873519, z: 5.4763503}
 --- !u!1 &189356445711274499
 GameObject:
   m_ObjectHideFlags: 0
