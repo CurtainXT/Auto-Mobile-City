@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 217891751121479269}
   - component: {fileID: 1598656597}
   m_Layer: 6
-  m_Name: Vehicle
+  m_Name: SportsCar
   m_TagString: Car
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68,8 +68,6 @@ Transform:
   - {fileID: 7123737460982049905}
   - {fileID: 73065134351591817}
   - {fileID: 4082123391877456520}
-  - {fileID: 4082123390819386700}
-  - {fileID: 4082123391523880300}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
@@ -127,14 +125,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9b04bfd86e0e5c4fbc1ccc0a323dfba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMaxSpeed: 10
-  defaultMaxSteerAngle: 32
+  defaultMaxSpeed: 18
+  isBreaking: 0
   horizontalInput: 0
   verticalInput: 0
-  isBreaking: 0
   currentSpeedSqr: 0
   motorForce: 1000
   breakForce: 3000
+  defaultMaxSteerAngle: 35
   frontLeftWheelCollider: {fileID: 4082123391131174968}
   frontRightWheelCollider: {fileID: 4082123391555015035}
   rearLeftWheelCollider: {fileID: 4082123391273763833}
@@ -143,7 +141,6 @@ MonoBehaviour:
   frontRightWheelTransform: {fileID: 3181597096772177787}
   rearLeftWheelTransform: {fileID: 3434170156212394420}
   rearRightWheelTransform: {fileID: 385045231150269152}
-  VehicleRig: {fileID: 217891751121479271}
   CenterOfMass: {fileID: 4082123391877456520}
 --- !u!114 &217891751121479269
 MonoBehaviour:
@@ -158,15 +155,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomDestination: 1
+  waitForTrafficLight: 1
   target: {fileID: 0}
   controller: {fileID: 217891751121479268}
   bNeedPath: 1
-  defaultMaxSpeedRange: {x: 8, y: 10}
+  defaultMaxSpeedRange: {x: 12, y: 14}
+  AsternTime: 1
   maxPathSpeed: 5
   currentMaxSpeed: 0
-  LifeCount: 30
+  LifeCount: 3000
   isShow: 1
-  currentState: 0
+  currentState: 8
   otherCar: {fileID: 0}
   isOnCollision: 0
 --- !u!65 &1598656597
@@ -180,8 +179,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.6982652, y: 0.8184756, z: 3.4627345}
-  m_Center: {x: -0.0010299681, y: 0.7441818, z: 4.246929}
+  m_Size: {x: 1.6946168, y: 0.8184756, z: 3.1528459}
+  m_Center: {x: 0.01882731, y: 0.74418175, z: 3.978768}
 --- !u!1 &1654330402988669482
 GameObject:
   m_ObjectHideFlags: 0
@@ -425,36 +424,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &4082123390819386703
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4082123390819386700}
-  m_Layer: 6
-  m_Name: Left
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4082123390819386700
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4082123390819386703}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 221509081831173670}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4082123391093514243
 GameObject:
   m_ObjectHideFlags: 0
@@ -638,36 +607,6 @@ WheelCollider:
     m_AsymptoteValue: 2
     m_Stiffness: 1
   m_Enabled: 1
---- !u!1 &4082123391523880303
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4082123391523880300}
-  m_Layer: 6
-  m_Name: Right
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4082123391523880300
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4082123391523880303}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 221509081831173670}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4082123391555015037
 GameObject:
   m_ObjectHideFlags: 0

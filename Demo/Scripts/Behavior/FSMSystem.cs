@@ -2,21 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FSMSystem : MonoBehaviour
+namespace ATMC
 {
-    private FSMState currentState;
-    private List<FSMState> states = new List<FSMState>();
-
-    // Start is called before the first frame update
-    void Start()
+    public class FSMSystem : MonoBehaviour
     {
-        
-    }
+        private FSMState currentState;
+        private List<FSMState> states = new List<FSMState>();
 
-    // Update is called once per frame
-    void Update()
-    {
-        currentState.Reason();
-        currentState.Act();
+        // Start is called before the first frame update
+        void Start()
+        {
+
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            currentState.Reason();
+            currentState.Act();
+        }
     }
 }

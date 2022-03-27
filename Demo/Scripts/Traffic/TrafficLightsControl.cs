@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class TrafficLightsControl : MonoBehaviour
 {
     public TrafficLight[] firstLights;
@@ -25,7 +26,8 @@ public class TrafficLightsControl : MonoBehaviour
             firstColor = Color.red;
             secondColor = Color.green;
             firstOn = false;
-        } else
+        }
+        else
         {
             firstColor = Color.green;
             secondColor = Color.red;
@@ -48,6 +50,6 @@ public class TrafficLightsControl : MonoBehaviour
             light.lightChange?.Invoke(light.isGreen);
         }
 
-        
+
     }
 }

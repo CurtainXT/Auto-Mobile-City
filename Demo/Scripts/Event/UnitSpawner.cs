@@ -2,30 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitSpawner : MonoBehaviour
+namespace ATMC
 {
-    public string poolTag;
-    public float spawnTimeDelay;
-
-    private float spawnTimer;
-    private ObjectPool pool;
-
-    // Start is called before the first frame update
-    void Start()
+    public class UnitSpawner : MonoBehaviour
     {
-        pool = ObjectPool.Instance;
-    }
+        public string poolTag;
+        public float spawnTimeDelay;
 
-    // Update is called once per frame
-    void Update()
-    {
-        // Demo
-        if (spawnTimer <= 0 && pool != null)
+        private float spawnTimer;
+        private ObjectPool pool;
+
+        // Start is called before the first frame update
+        void Start()
         {
-            ObjectPool.Instance.SpawnFromPool(poolTag, this.transform.position, this.transform.rotation);
-            spawnTimer = spawnTimeDelay;
+            pool = ObjectPool.Instance;
         }
-        spawnTimer -= Time.deltaTime;
-        //
+
+        // Update is called once per frame
+        void Update()
+        {
+            // Demo
+            if (spawnTimer <= 0 && pool != null)
+            {
+                ObjectPool.Instance.SpawnFromPool(poolTag, this.transform.position, this.transform.rotation);
+                spawnTimer = spawnTimeDelay;
+            }
+            spawnTimer -= Time.deltaTime;
+            //
+        }
     }
 }
