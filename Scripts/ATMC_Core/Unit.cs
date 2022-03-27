@@ -215,14 +215,12 @@ namespace ATMC
                     if (t != null)
                     {
                         target = t.transform;
+                        if (Vector3.Distance(transform.position, target.position) > 90f)
+                        {
+                            bNeedPath = true;
+                            break;
+                        }
                     }
-
-                    if (Vector3.Distance(transform.position, target.position) > 90f)
-                    {
-                        bNeedPath = true;
-                        break;
-                    }
-
                 }
             }
         }
