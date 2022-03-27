@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 namespace ATMC
 {
-    public class ATMCSceneManager : MonoBehaviour
+    public class ATMCDemoSceneManager : MonoBehaviour
     {
         // Update is called once per frame
         void Update()
@@ -14,7 +14,7 @@ namespace ATMC
             {
                 Application.Quit();
             }
-            if(Input.GetKeyUp(KeyCode.LeftShift))
+            if(Input.GetKeyUp(KeyCode.Space))
             {
                 SceneManager.LoadScene(0);
             }

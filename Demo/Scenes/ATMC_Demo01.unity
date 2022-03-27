@@ -1602,7 +1602,7 @@ MonoBehaviour:
     size: 2
   - tag: Sedan
     prefab: {fileID: 1882222105432856, guid: 22393ee048ddb5d47a1a3d558c531a0c, type: 3}
-    size: 20
+    size: 25
   - tag: Jeep
     prefab: {fileID: 1882222105432856, guid: ba8ba67b1b8f7344198f2a89022c9892, type: 3}
     size: 5
@@ -1862,6 +1862,7 @@ Transform:
   - {fileID: 71599542}
   - {fileID: 1236854731}
   - {fileID: 1751013154}
+  - {fileID: 1508064019}
   m_Father: {fileID: 58776347}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3152,6 +3153,53 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4785179486904736, guid: e1304517d24a34d348e58d276929bd24, type: 3}
   m_PrefabInstance: {fileID: 964517309}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1508064018
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1508064019}
+  - component: {fileID: 1508064020}
+  m_Layer: 0
+  m_Name: Sedan_Spawner (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1508064019
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508064018}
+  m_LocalRotation: {x: -0, y: 0.000000923872, z: -0, w: -1}
+  m_LocalPosition: {x: -198.6, y: 0, z: 139.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 754729835}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: -360, z: 0}
+--- !u!114 &1508064020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508064018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbaef2bfce14d424fa86934845a9cf79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isRandomSpawner: 0
+  RandomPoolTagsPool: []
+  poolTag: Sedan
+  spawnTimeDelay: 8
 --- !u!1001 &1520828454
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3739,7 +3787,7 @@ Camera:
   near clip plane: 0.03
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 20
   m_Depth: -1
   m_CullingMask:
@@ -4322,7 +4370,7 @@ MonoBehaviour:
   targetTrans: {fileID: 1201528058}
   moveSpeed: 30
   rotateSpeed: 35
-  sizeSpeed: 400
+  sizeSpeed: 18
   WorldMoveRangeVertical: {x: 20, y: 190}
   WorldMoveRangeHorizontal: {x: -200, y: 100}
   CameraSizeRange: {x: 8, y: 20}

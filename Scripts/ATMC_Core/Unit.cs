@@ -518,14 +518,11 @@ namespace ATMC
                 }
                 else if (!IsInFrontSight(collision.transform) && !IsInRearSight(collision.transform))
                 {
-                    currentState = StateType.StartAvoidance;
                     otherCar = collision.collider.GetComponentInParent<ATMCBaseUnitController>();
+                    if(otherCar.currentSpeedSqr < controller.currentSpeedSqr)
+                        currentState = StateType.StartAvoidance;
                 }
             }
-        }
-        private void OnCollisionExit(Collision collision)
-        {
-
         }
 
         private void OnTriggerEnter(Collider other)

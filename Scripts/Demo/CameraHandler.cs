@@ -88,17 +88,17 @@ public class CameraHandler : MonoBehaviour
             }
         }
 
-        float mouseScrollInput = Input.GetAxis("Mouse ScrollWheel");
+        float cameraZoomInput = Input.GetAxis("CameraZoom");
         float CameraRotateInput = Input.GetAxis("CameraRotate");
 
         if(camera.orthographic)
         {
-            camera.orthographicSize -= mouseScrollInput * sizeSpeed * Time.deltaTime;
+            camera.orthographicSize += cameraZoomInput * sizeSpeed * Time.deltaTime;
             camera.orthographicSize = Mathf.Clamp(camera.orthographicSize, CameraSizeRange.x, CameraSizeRange.y);
         }
         else
         {
-            camera.fieldOfView -= mouseScrollInput * sizeSpeed * Time.deltaTime;
+            camera.fieldOfView += cameraZoomInput * sizeSpeed * Time.deltaTime;
             camera.fieldOfView = Mathf.Clamp(camera.fieldOfView, CameraFOVRange.x, CameraFOVRange.y);
         }
 

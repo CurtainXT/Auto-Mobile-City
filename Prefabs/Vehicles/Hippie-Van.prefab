@@ -78,8 +78,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.726495, y: 2.0280182, z: 1.726758}
-  m_Center: {x: -0.002651453, y: 1.0402571, z: 3.2271442}
+  m_Size: {x: 2.3726866, y: 2.0280182, z: 2.0094662}
+  m_Center: {x: -0.002651016, y: 1.0402571, z: 3.3684998}
 --- !u!114 &1636628057143781362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,11 +95,12 @@ MonoBehaviour:
   randomDestination: 1
   waitForTrafficLight: 1
   WillAvoidanceFrontCar: 1
+  AsternTime: 2
+  StopWaitToAsternTime: 2
   target: {fileID: 0}
   controller: {fileID: 0}
   bNeedPath: 1
   defaultMaxSpeedRange: {x: 6.5, y: 8.5}
-  AsternTime: 2
   maxPathSpeed: 5
   currentMaxSpeed: 0
   LifeCount: 30

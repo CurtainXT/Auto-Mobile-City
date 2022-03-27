@@ -66,8 +66,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.945005, y: 1.2015463, z: 7.842862}
-  m_Center: {x: 0.008914992, y: 0.95339113, z: 0.18985838}
+  m_Size: {x: 1.945005, y: 1.2015463, z: 7.8428626}
+  m_Center: {x: 0.008914967, y: 0.9533912, z: 0.18985827}
 --- !u!65 &2325624889596233839
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -96,11 +96,12 @@ MonoBehaviour:
   randomDestination: 1
   waitForTrafficLight: 1
   WillAvoidanceFrontCar: 0
+  AsternTime: 2.5
+  StopWaitToAsternTime: 2
   target: {fileID: 0}
   controller: {fileID: 0}
   bNeedPath: 1
   defaultMaxSpeedRange: {x: 9, y: 11}
-  AsternTime: 2.5
   maxPathSpeed: 5
   currentMaxSpeed: 0
   LifeCount: 30
@@ -127,7 +128,7 @@ MonoBehaviour:
   currentSpeedSqr: 0
   motorForce: 1500
   breakForce: 3200
-  defaultMaxSteerAngle: 30
+  defaultMaxSteerAngle: 35
   frontLeftWheelCollider: {fileID: 1285495996524886839}
   frontRightWheelCollider: {fileID: 6731213622996459205}
   rearLeftWheelCollider: {fileID: 3699893713915346119}
@@ -148,8 +149,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.9461172, y: 3.2631505, z: 3.2279367}
-  m_Center: {x: 0.0067856163, y: 1.6382825, z: 5.861388}
+  m_Size: {x: 4.026911, y: 3.2631507, z: 3.407982}
+  m_Center: {x: 0.056640506, y: 1.6382827, z: 5.9514146}
 --- !u!1 &321251318618109349
 GameObject:
   m_ObjectHideFlags: 0

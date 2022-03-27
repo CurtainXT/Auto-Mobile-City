@@ -157,11 +157,12 @@ MonoBehaviour:
   randomDestination: 1
   waitForTrafficLight: 1
   WillAvoidanceFrontCar: 1
+  AsternTime: 1
+  StopWaitToAsternTime: 2
   target: {fileID: 0}
   controller: {fileID: 217891751121479268}
   bNeedPath: 1
   defaultMaxSpeedRange: {x: 12, y: 14}
-  AsternTime: 1
   maxPathSpeed: 5
   currentMaxSpeed: 0
   LifeCount: 3000
@@ -180,8 +181,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.6946168, y: 0.8184756, z: 3.1528459}
-  m_Center: {x: 0.01882731, y: 0.74418175, z: 3.978768}
+  m_Size: {x: 3.043348, y: 0.81847566, z: 3.3319252}
+  m_Center: {x: 0.039261155, y: 0.7441817, z: 4.0683064}
 --- !u!1 &1654330402988669482
 GameObject:
   m_ObjectHideFlags: 0
