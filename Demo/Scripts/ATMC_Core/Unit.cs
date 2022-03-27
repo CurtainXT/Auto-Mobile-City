@@ -11,6 +11,7 @@ namespace ATMC
     {
         public bool randomDestination = true;
         public bool waitForTrafficLight = true;
+        public bool WillAvoidance = true;
 
         public Transform target;
         public ATMCBaseUnitController controller;
@@ -22,6 +23,7 @@ namespace ATMC
         public bool bNeedPath = true;
 
         public Vector2 defaultMaxSpeedRange;
+        public float AsternTime = 2.5f;
         [HideInInspector]
         public float maxPathSpeed = 5f;
         [SerializeField]
@@ -228,7 +230,7 @@ namespace ATMC
 
         private void FixCircling()
         {
-            // 如果目标点在正坐或正右反向 车辆可能会一直转圈
+            // 如果目标点在正左或正右反向 车辆可能会一直转圈
             float targetAngle = Vector3.Angle(transform.forward, currentTargetWaypoint - transform.position);
             if (targetAngle > 60 && targetAngle < 110)
             {
@@ -334,10 +336,13 @@ namespace ATMC
                     break;
                 case StateType.StartAvoidance:
                     {
-                        CurrentMaxSpeed = maxPathSpeed;
-                        float avoidTimer = Mathf.Clamp(20f / controller.currentSpeedSqr, 0.2f, 0.6f);
-                        StopCoroutine(DoAvoidance(avoidTimer));
-                        StartCoroutine(DoAvoidance(avoidTimer));
+                        if (this.gameObject.activeSelf)
+                        {
+                            CurrentMaxSpeed = maxPathSpeed;
+                            float avoidTimer = Mathf.Clamp(20f / controller.currentSpeedSqr, 0.2f, 0.6f);
+                            StopCoroutine(DoAvoidance(avoidTimer));
+                            StartCoroutine(DoAvoidance(avoidTimer));
+                        }
                     }
                     break;
                 case StateType.Avoidance:
@@ -348,8 +353,11 @@ namespace ATMC
                     break;
                 case StateType.StartAstern:
                     {
-                        StopCoroutine(DoAstern(1f));
-                        StartCoroutine(DoAstern(1f));
+                        if(this.gameObject.activeSelf)
+                        {
+                            StopCoroutine(DoAstern(AsternTime));
+                            StartCoroutine(DoAstern(AsternTime));
+                        }
                     }
                     break;
                 case StateType.Astern:
@@ -507,7 +515,7 @@ namespace ATMC
                 {
                     currentState = StateType.StartAstern;
                 }
-                else if (!IsInFrontSight(collision.transform) && !IsInRearSight(collision.transform))
+                else if (!IsInFrontSight(collision.transform) && !IsInRearSight(collision.transform) && WillAvoidance)
                 {
                     currentState = StateType.StartAvoidance;
                     otherCar = collision.collider.GetComponentInParent<ATMCBaseUnitController>();
@@ -521,7 +529,7 @@ namespace ATMC
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("TrafficLight") && currentState == StateType.Moving)
+            if (other.CompareTag("TrafficLight") && waitForTrafficLight && currentState == StateType.Moving)
             {
                 TrafficLight trafic = other.GetComponent<TrafficLight>();
                 if (Vector3.Angle(-trafic.transform.forward, transform.forward) < 25)
@@ -549,7 +557,7 @@ namespace ATMC
                 {
                     currentState = StateType.StopByCar;
                 }
-                else if (IsInFrontSight(other.transform)/* && other.isTrigger*/)
+                else if (IsInFrontSight(other.transform) && WillAvoidance/* && other.isTrigger*/)
                 {
                     if (otherCar.currentSpeedSqr > controller.currentSpeedSqr)
                     {
