@@ -512,7 +512,7 @@ namespace ATMC
             {
                 Debug.Log("We have car collision!");
 
-                if (IsInFrontSight(collision.transform) && !IsInSameDirection(collision.transform.forward))
+                if (IsInFrontSight(collision.transform)/* && !IsInSameDirection(collision.transform.forward)*/)
                 {
                     currentState = StateType.StartAstern;
                 }
@@ -563,7 +563,16 @@ namespace ATMC
                     }
                     else
                     {
-                        currentState = StateType.StartAvoidance;
+                        float otherLeftOrRight = AngleDir(transform.forward, other.transform.position - transform.position, transform.up);
+                        float targetLeftOrRight = AngleDir(transform.forward, currentTargetWaypoint - transform.position, transform.up);
+                        if(otherLeftOrRight * targetLeftOrRight >= 0)
+                        {
+                            currentState = StateType.StartAvoidance;
+                        }
+                        else
+                        {
+                            currentState = StateType.Moving;
+                        }
                     }
                 }
 
@@ -644,6 +653,47 @@ namespace ATMC
                     }
 
                 }
+            }
+        }
+
+
+        private void OnGUI()
+        {
+            if(isShow)
+            {
+
+                Vector2 position = Camera.main.WorldToScreenPoint(transform.position);
+                Vector2 stateSize = GUI.skin.label.CalcSize(new GUIContent(currentState.ToString()));
+                switch (currentState)
+                {
+                    case StateType.Moving:
+                        GUI.color = Color.green;
+                        break;
+                    case StateType.MovingBehindCar:
+                        GUI.color = Color.yellow;
+                        break;
+                    case StateType.StopByTrafficLight:
+                        GUI.color = Color.red;
+                        break;
+                    case StateType.StopByCar:
+                        GUI.color = Color.black;
+                        break;
+                    case StateType.Avoidance:
+                        GUI.color = Color.blue;
+                        break;
+                    case StateType.Astern:
+                        GUI.color = Color.grey;
+                        break;
+                    default:
+                        break;
+                }
+                GUI.Label(new Rect(position.x, Screen.height - position.y + stateSize.y, stateSize.x, stateSize.y), currentState.ToString());
+
+                position = Camera.main.WorldToScreenPoint(transform.position);
+                Vector2 nameSize = GUI.skin.label.CalcSize(new GUIContent(gameObject.name));
+                GUI.color = Color.cyan;
+                //GUI.Label(new Rect(position.x - (nameSize.x / 2), position.y - nameSize.y, nameSize.x, nameSize.y), gameObject.name);
+                GUI.Label(new Rect(position.x, Screen.height - position.y, nameSize.x, nameSize.y), gameObject.name);
             }
         }
         #endregion
