@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1970018888713252190
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1970018888713252177}
+  - component: {fileID: 1970018888713252176}
+  m_Layer: 0
+  m_Name: ObjectPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1970018888713252177
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1970018888713252190}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1970018888713252176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1970018888713252190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f65311872afa5543844cfcdd303f2c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pools:
+  - tag: SportsCar
+    prefab: {fileID: 217891751121479272, guid: 801458489646f7b45869b231311641b5, type: 3}
+    size: 5
+  - tag: Formula
+    prefab: {fileID: 1317935177528374, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
+    size: 1
+  - tag: Taxi
+    prefab: {fileID: 1882222105432856, guid: 8852362d7f010bf4bbca19596452314c, type: 3}
+    size: 7
+  - tag: Hipple-Van
+    prefab: {fileID: 1000014082902004, guid: 77f9eac5eae7a8c4eaafeba02cb3b389, type: 3}
+    size: 4
+  - tag: Ambulance
+    prefab: {fileID: 1882222105432856, guid: 386b582934708874287acd7b3328ad4a, type: 3}
+    size: 2
+  - tag: Sedan
+    prefab: {fileID: 1882222105432856, guid: 22393ee048ddb5d47a1a3d558c531a0c, type: 3}
+    size: 25
+  - tag: Jeep
+    prefab: {fileID: 1882222105432856, guid: ba8ba67b1b8f7344198f2a89022c9892, type: 3}
+    size: 5
+  - tag: Coupe
+    prefab: {fileID: 1882222105432856, guid: 2bcbb8eb7ebb51c40a464673ebeb91ec, type: 3}
+    size: 5
+  - tag: Truck
+    prefab: {fileID: 1882222105432856, guid: 9e083262ee1d44e40af3c2fd34505d0f, type: 3}
+    size: 4
+  - tag: FireTruck
+    prefab: {fileID: 1882222105432856, guid: 8b7b43c327d246e45b91cdb470075b33, type: 3}
+    size: 2
+  - tag: PoliceCar
+    prefab: {fileID: 1882222105432856, guid: b7169633d46216d4f8fc23085c326209, type: 3}
+    size: 4
+  - tag: VeteranCar
+    prefab: {fileID: 1882222105432856, guid: c4676c09a64101b4e9b302f1cfc459a6, type: 3}
+    size: 2
+  - tag: RoadAdmin
+    prefab: {fileID: 1882222105432856, guid: fcad54ce84f609d46a4cb6dd276968f5, type: 3}
+    size: 2
+  - tag: ArmoredTruck
+    prefab: {fileID: 1882222105432856, guid: 4a769027881044646aeab866d0c65b36, type: 3}
+    size: 2
+  - tag: Bus
+    prefab: {fileID: 1882222105432856, guid: f7f84aaf57628e7478d00c002bf86281, type: 3}
+    size: 2
+  - tag: SchoolBus
+    prefab: {fileID: 1882222105432856, guid: ddf9b3e013a95094294502feb4cafb57, type: 3}
+    size: 2
+  - tag: TowTruck
+    prefab: {fileID: 1882222105432856, guid: 15a9d7ccd4c2efd47b0013d07b978991, type: 3}
+    size: 2
+  - tag: DumpTruck
+    prefab: {fileID: 1882222105432856, guid: 86bc352fee04339429ccb24236b6d8c5, type: 3}
+    size: 1

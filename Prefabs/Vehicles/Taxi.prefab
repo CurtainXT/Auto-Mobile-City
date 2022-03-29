@@ -524,7 +524,7 @@ MonoBehaviour:
   waitForTrafficLight: 1
   WillAvoidanceFrontCar: 1
   AsternTime: 1
-  StopWaitToAsternTime: 2
+  StopWaitToAsternTime: 1.8
   target: {fileID: 0}
   controller: {fileID: 0}
   bNeedPath: 1

@@ -158,7 +158,7 @@ MonoBehaviour:
   waitForTrafficLight: 1
   WillAvoidanceFrontCar: 1
   AsternTime: 1
-  StopWaitToAsternTime: 2
+  StopWaitToAsternTime: 1.5
   target: {fileID: 0}
   controller: {fileID: 217891751121479268}
   bNeedPath: 1
@@ -181,8 +181,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 3.043348, y: 0.81847566, z: 3.3319252}
-  m_Center: {x: 0.039261155, y: 0.7441817, z: 4.0683064}
+  m_Size: {x: 3.043348, y: 0.81847566, z: 4.088039}
+  m_Center: {x: 0.039261073, y: 0.7441817, z: 4.446363}
 --- !u!1 &1654330402988669482
 GameObject:
   m_ObjectHideFlags: 0

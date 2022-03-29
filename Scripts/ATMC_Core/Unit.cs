@@ -16,7 +16,9 @@ namespace ATMC
         public float AsternTime = 2.5f;
         public float StopWaitToAsternTime = 2f;
 
+        [HideInInspector]
         public Transform target;
+        [HideInInspector]
         public ATMCBaseUnitController controller;
         List<Path> path = new List<Path>();
         int currentPathIndex;
@@ -24,7 +26,6 @@ namespace ATMC
         Vector3 currentTargetWaypoint;
         [HideInInspector]
         public bool bNeedPath = true;
-        [HideInInspector]
         public Vector2 defaultMaxSpeedRange;
 
         [HideInInspector]
@@ -516,7 +517,7 @@ namespace ATMC
                 {
                     currentState = StateType.StartAstern;
                 }
-                else if (!IsInFrontSight(collision.transform) && !IsInRearSight(collision.transform))
+                else if (!IsInFrontSight(collision.transform) && !IsInRearSight(collision.transform) && WillAvoidanceFrontCar)
                 {
                     otherCar = collision.collider.GetComponentInParent<ATMCBaseUnitController>();
                     if(otherCar.currentSpeedSqr < controller.currentSpeedSqr)
