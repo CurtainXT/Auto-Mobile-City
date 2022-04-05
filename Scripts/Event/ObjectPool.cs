@@ -56,6 +56,12 @@ namespace ATMC
                 return null;
             }
 
+            if (poolDictionary[tag].Count == 0)
+            {
+                Debug.LogWarning("Pool with tag" + tag + " has size 0 in pool dictionary!");
+                return null;
+            }
+
             // 如果超出对象池容量 队列头部元素无论是否激活都将重置
             GameObject objToSpawn = poolDictionary[tag].Dequeue();
             //Demo

@@ -103,8 +103,9 @@ MonoBehaviour:
   defaultMaxSpeedRange: {x: 6.5, y: 8.5}
   maxPathSpeed: 5
   currentMaxSpeed: 0
-  LifeCount: 30
+  LifeCount: 20
   isShow: 1
+  currentCollisionTimer: 0
   currentState: 8
   otherCar: {fileID: 0}
   isOnCollision: 0
@@ -125,9 +126,9 @@ MonoBehaviour:
   horizontalInput: 0
   verticalInput: 0
   currentSpeedSqr: 0
-  motorForce: 800
+  motorForce: 2000
   breakForce: 2000
-  defaultMaxSteerAngle: 32
+  defaultMaxSteerAngle: 35
   frontLeftWheelCollider: {fileID: 7840927545772340032}
   frontRightWheelCollider: {fileID: 9139914182876071021}
   rearLeftWheelCollider: {fileID: 8068855752720331263}
@@ -312,6 +313,7 @@ GameObject:
   - component: {fileID: 4947869136695906}
   - component: {fileID: 33133177390096580}
   - component: {fileID: 23983881292723426}
+  - component: {fileID: 1248424624533102190}
   m_Layer: 0
   m_Name: car-hippie-van-base
   m_TagString: Untagged
@@ -388,6 +390,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1248424624533102190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668108674502366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bbdcec9ed5fb384db878fe29c59d524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1873964094228546
 GameObject:
   m_ObjectHideFlags: 0

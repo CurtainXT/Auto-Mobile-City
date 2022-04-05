@@ -132,7 +132,7 @@ MonoBehaviour:
   currentSpeedSqr: 0
   motorForce: 1000
   breakForce: 3000
-  defaultMaxSteerAngle: 35
+  defaultMaxSteerAngle: 36
   frontLeftWheelCollider: {fileID: 4082123391131174968}
   frontRightWheelCollider: {fileID: 4082123391555015035}
   rearLeftWheelCollider: {fileID: 4082123391273763833}
@@ -165,7 +165,7 @@ MonoBehaviour:
   defaultMaxSpeedRange: {x: 12, y: 14}
   maxPathSpeed: 5
   currentMaxSpeed: 0
-  LifeCount: 3000
+  LifeCount: 20
   isShow: 1
   currentState: 8
   otherCar: {fileID: 0}

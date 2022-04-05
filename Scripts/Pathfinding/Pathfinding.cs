@@ -151,6 +151,10 @@ namespace ATMC
 
             foreach (Tile tile in Tile.tiles)
             {
+                if(tile == null)
+                {
+                    continue;
+                }
                 float distance = Vector3.Distance(tile.transform.position, point);
                 if (distance < minDistance)
                 {
@@ -181,81 +185,81 @@ namespace ATMC
             return closestPath;
         }
     }
-    #region Editor
-#if UNITY_EDITOR
-    [CustomEditor(typeof(Pathfinding)), CanEditMultipleObjects]
-    public class CustomPathEditor : Editor
-    {
-        Pathfinding navPath;
-        private void OnEnable()
-        {
-            navPath = target as Pathfinding;
-        }
-        void OnSceneGUI()
-        {
-            if (navPath.wholePath.Count == 0)
-            {
-                if (navPath.PathList.Count != 0)
-                {
-                    for (int i = 0; i < navPath.PathList.Count; i++)
-                    {
-                        if (navPath.PathList[i] != null)
-                        {
-                            if (i < navPath.PathList.Count - 1)
-                            {
-                                for (int j = 1; j < navPath.PathList[i].pathPositions.Count; j++)
-                                {
-                                    Handles.color = Color.white;
-                                    Handles.DrawLine(navPath.PathList[i].pathPositions[j - 1].position, navPath.PathList[i].pathPositions[j].position);
-                                    Handles.color = Color.blue;
-                                    Handles.ArrowHandleCap(0, navPath.PathList[i].pathPositions[j - 1].position, Quaternion.LookRotation(navPath.PathList[i].pathPositions[j].position - navPath.PathList[i].pathPositions[j - 1].position), 3f, EventType.Repaint);
-                                    if (i == 0)
-                                        Handles.color = Color.blue;
-                                    else if (i == navPath.PathList.Count - 1)
-                                        Handles.color = Color.red;
-                                    else
-                                        Handles.color = Color.white;
-                                    Handles.SphereHandleCap(0, navPath.PathList[i].pathPositions[j].position, Quaternion.LookRotation(navPath.PathList[i].pathPositions[j].position), 0.2f, EventType.Repaint);
-                                }
+//    #region Editor
+//#if UNITY_EDITOR
+//    [CustomEditor(typeof(Pathfinding)), CanEditMultipleObjects]
+//    public class CustomPathEditor : Editor
+//    {
+//        Pathfinding navPath;
+//        private void OnEnable()
+//        {
+//            navPath = target as Pathfinding;
+//        }
+//        void OnSceneGUI()
+//        {
+//            if (navPath.wholePath.Count == 0)
+//            {
+//                if (navPath.PathList.Count != 0)
+//                {
+//                    for (int i = 0; i < navPath.PathList.Count; i++)
+//                    {
+//                        if (navPath.PathList[i] != null)
+//                        {
+//                            if (i < navPath.PathList.Count - 1)
+//                            {
+//                                for (int j = 1; j < navPath.PathList[i].pathPositions.Count; j++)
+//                                {
+//                                    Handles.color = Color.white;
+//                                    Handles.DrawLine(navPath.PathList[i].pathPositions[j - 1].position, navPath.PathList[i].pathPositions[j].position);
+//                                    Handles.color = Color.blue;
+//                                    Handles.ArrowHandleCap(0, navPath.PathList[i].pathPositions[j - 1].position, Quaternion.LookRotation(navPath.PathList[i].pathPositions[j].position - navPath.PathList[i].pathPositions[j - 1].position), 3f, EventType.Repaint);
+//                                    if (i == 0)
+//                                        Handles.color = Color.blue;
+//                                    else if (i == navPath.PathList.Count - 1)
+//                                        Handles.color = Color.red;
+//                                    else
+//                                        Handles.color = Color.white;
+//                                    Handles.SphereHandleCap(0, navPath.PathList[i].pathPositions[j].position, Quaternion.LookRotation(navPath.PathList[i].pathPositions[j].position), 0.2f, EventType.Repaint);
+//                                }
 
-                            }
-                        }
+//                            }
+//                        }
 
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < navPath.wholePath.Count; i++)
-                {
-                    if (navPath.wholePath[i] != null)
-                    {
-                        if (i < navPath.wholePath.Count - 1)
-                        {
-                            for (int j = 1; j < navPath.wholePath[i].pathPositions.Count; j++)
-                            {
-                                Handles.color = Color.white;
-                                Handles.DrawLine(navPath.wholePath[i].pathPositions[j - 1].position, navPath.wholePath[i].pathPositions[j].position);
-                                Handles.color = Color.blue;
-                                Handles.ArrowHandleCap(0, navPath.wholePath[i].pathPositions[j - 1].position, Quaternion.LookRotation(navPath.wholePath[i].pathPositions[j].position - navPath.wholePath[i].pathPositions[j - 1].position), 3f, EventType.Repaint);
-                                if (i == 0)
-                                    Handles.color = Color.blue;
-                                else if (i == navPath.wholePath.Count - 1)
-                                    Handles.color = Color.red;
-                                else
-                                    Handles.color = Color.white;
-                                Handles.SphereHandleCap(0, navPath.wholePath[i].pathPositions[j].position, Quaternion.LookRotation(navPath.wholePath[i].pathPositions[j].position), 0.2f, EventType.Repaint);
-                            }
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                for (int i = 0; i < navPath.wholePath.Count; i++)
+//                {
+//                    if (navPath.wholePath[i] != null)
+//                    {
+//                        if (i < navPath.wholePath.Count - 1)
+//                        {
+//                            for (int j = 1; j < navPath.wholePath[i].pathPositions.Count; j++)
+//                            {
+//                                Handles.color = Color.white;
+//                                Handles.DrawLine(navPath.wholePath[i].pathPositions[j - 1].position, navPath.wholePath[i].pathPositions[j].position);
+//                                Handles.color = Color.blue;
+//                                Handles.ArrowHandleCap(0, navPath.wholePath[i].pathPositions[j - 1].position, Quaternion.LookRotation(navPath.wholePath[i].pathPositions[j].position - navPath.wholePath[i].pathPositions[j - 1].position), 3f, EventType.Repaint);
+//                                if (i == 0)
+//                                    Handles.color = Color.blue;
+//                                else if (i == navPath.wholePath.Count - 1)
+//                                    Handles.color = Color.red;
+//                                else
+//                                    Handles.color = Color.white;
+//                                Handles.SphereHandleCap(0, navPath.wholePath[i].pathPositions[j].position, Quaternion.LookRotation(navPath.wholePath[i].pathPositions[j].position), 0.2f, EventType.Repaint);
+//                            }
 
-                        }
-                    }
+//                        }
+//                    }
 
-                }
-            }
+//                }
+//            }
 
-        }
-    }
-#endif
-    #endregion
+//        }
+//    }
+//#endif
+//    #endregion
 
 }

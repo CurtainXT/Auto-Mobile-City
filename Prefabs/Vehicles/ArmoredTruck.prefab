@@ -104,7 +104,7 @@ MonoBehaviour:
   defaultMaxSpeedRange: {x: 8, y: 10}
   maxPathSpeed: 5
   currentMaxSpeed: 0
-  LifeCount: 30
+  LifeCount: 20
   isShow: 1
   currentState: 8
   otherCar: {fileID: 0}
@@ -128,7 +128,7 @@ MonoBehaviour:
   currentSpeedSqr: 0
   motorForce: 2400
   breakForce: 4000
-  defaultMaxSteerAngle: 35
+  defaultMaxSteerAngle: 38
   frontLeftWheelCollider: {fileID: 1285495996524886839}
   frontRightWheelCollider: {fileID: 6731213622996459205}
   rearLeftWheelCollider: {fileID: 3699893713915346119}
@@ -721,6 +721,7 @@ GameObject:
   - component: {fileID: 4502983166588595788}
   - component: {fileID: 1818404667019170342}
   - component: {fileID: 6575382339171829644}
+  - component: {fileID: 1486317220064381125}
   m_Layer: 0
   m_Name: armored-truck-base
   m_TagString: Untagged
@@ -797,6 +798,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1486317220064381125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6469806457160582533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bbdcec9ed5fb384db878fe29c59d524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8072550563381125829
 GameObject:
   m_ObjectHideFlags: 0

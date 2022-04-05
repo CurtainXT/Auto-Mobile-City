@@ -104,7 +104,7 @@ MonoBehaviour:
   defaultMaxSpeedRange: {x: 8, y: 10}
   maxPathSpeed: 5
   currentMaxSpeed: 0
-  LifeCount: 30
+  LifeCount: 20
   isShow: 1
   currentState: 8
   otherCar: {fileID: 0}
@@ -847,6 +847,7 @@ GameObject:
   - component: {fileID: 4799984580638721455}
   - component: {fileID: 3275206135397595869}
   - component: {fileID: 4607272198001493067}
+  - component: {fileID: 8482930118253357101}
   m_Layer: 0
   m_Name: car-truck-dump-base
   m_TagString: Untagged
@@ -923,6 +924,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8482930118253357101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7293308484245713147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bbdcec9ed5fb384db878fe29c59d524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8211816943425787890
 GameObject:
   m_ObjectHideFlags: 0

@@ -16,7 +16,7 @@ namespace ATMC
         public float AsternTime = 2.5f;
         public float StopWaitToAsternTime = 2f;
 
-        [HideInInspector]
+        //[HideInInspector]
         public Transform target;
         [HideInInspector]
         public ATMCBaseUnitController controller;
@@ -36,6 +36,8 @@ namespace ATMC
         public float LifeCount = 30;
         public bool isShow = true;
         private float currentStopByCarTimer = 0;
+        [SerializeField]
+        private float currentCollisionTimer = 0;
         // --
         [HideInInspector]
         public float CurrentMaxSpeed
@@ -177,7 +179,7 @@ namespace ATMC
         {
             //currentState = StateType.Moving;
             currentPathIndex = 0;
-            currentPathPositionIndex = FindClosestPathPositionIndexInUnitFront(path[currentPathIndex]);
+            currentPathPositionIndex = Utils.FindClosestPathPositionIndexInUnitFront(this.transform, path[currentPathIndex]);
             currentTargetWaypoint = path[currentPathIndex].pathPositions[currentPathPositionIndex].position;
 
             while (true)
@@ -260,7 +262,7 @@ namespace ATMC
 
                     nextTargetWaypoint = path[nextPathIndex].pathPositions[nextPathPositionIndex].position;
                     Vector3 selfToNextTarget = (nextTargetWaypoint - transform.position);
-                    if (IsInSameDirection(selfToNextTarget))
+                    if (Utils.IsInSameDirection(this.transform, selfToNextTarget))
                     {
 
                         currentTargetWaypoint = nextTargetWaypoint;
@@ -397,7 +399,7 @@ namespace ATMC
 
         private void SteeringToTarget()
         {
-            float leftOrRight = AngleDir(transform.forward, currentTargetWaypoint - transform.position, transform.up);
+            float leftOrRight = Utils.AngleDir(transform.forward, currentTargetWaypoint - transform.position, transform.up);
             if (leftOrRight > 0)
                 controller.horizontalInput = 1f;
             else
@@ -410,7 +412,7 @@ namespace ATMC
         {
             if (otherCar != null && otherCar.gameObject.activeSelf)
             {
-                float leftOrRight = AngleDir(transform.forward, transform.position - otherCar.transform.position, transform.up);
+                float leftOrRight = Utils.AngleDir(transform.forward, transform.position - otherCar.transform.position, transform.up);
                 if (leftOrRight > 0)
                     controller.horizontalInput = 1f;
                 else
@@ -434,96 +436,109 @@ namespace ATMC
         #endregion
 
         #region Utils
-        private float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
-        {
-            Vector3 perp = Vector3.Cross(fwd, targetDir);
-            float dir = Vector3.Dot(perp, up);
+        //private float AngleDir(Vector3 fwd, Vector3 targetDir, Vector3 up)
+        //{
+        //    Vector3 perp = Vector3.Cross(fwd, targetDir);
+        //    float dir = Vector3.Dot(perp, up);
 
-            if (dir > 0.5f)
-            {
-                return 1f;
-            }
-            else if (dir < -0.5f)
-            {
-                return -1f;
-            }
-            else
-            {
-                return 0.0f;
-            }
-        }
+        //    if (dir > 0.5f)
+        //    {
+        //        return 1f;
+        //    }
+        //    else if (dir < -0.5f)
+        //    {
+        //        return -1f;
+        //    }
+        //    else
+        //    {
+        //        return 0.0f;
+        //    }
+        //}
 
-        private int FindClosestPathPositionIndexInUnitFront(Path path)
-        {
-            int currentClosestIndex = 0;
-            Transform ClosestPathPosition = null;
-            for (int i = 0; i < path.pathPositions.Count; i++)
-            {
-                Transform CurrentIndexPosition = path.pathPositions[i];
-                if (Vector3.Dot(transform.forward, (CurrentIndexPosition.position - transform.position).normalized) > 0)
-                {
-                    if (ClosestPathPosition == null)
-                    {
-                        currentClosestIndex = i;
-                        ClosestPathPosition = CurrentIndexPosition;
-                    }
+        //private int FindClosestPathPositionIndexInUnitFront(Path path)
+        //{
+        //    int currentClosestIndex = 0;
+        //    Transform ClosestPathPosition = null;
+        //    for (int i = 0; i < path.pathPositions.Count; i++)
+        //    {
+        //        Transform CurrentIndexPosition = path.pathPositions[i];
+        //        if (Vector3.Dot(transform.forward, (CurrentIndexPosition.position - transform.position).normalized) > 0)
+        //        {
+        //            if (ClosestPathPosition == null)
+        //            {
+        //                currentClosestIndex = i;
+        //                ClosestPathPosition = CurrentIndexPosition;
+        //            }
 
-                    if ((CurrentIndexPosition.position - transform.position).sqrMagnitude < (ClosestPathPosition.position - transform.position).sqrMagnitude)
-                    {
-                        currentClosestIndex = i;
-                        ClosestPathPosition = CurrentIndexPosition;
-                    }
-                }
-            }
+        //            if ((CurrentIndexPosition.position - transform.position).sqrMagnitude < (ClosestPathPosition.position - transform.position).sqrMagnitude)
+        //            {
+        //                currentClosestIndex = i;
+        //                ClosestPathPosition = CurrentIndexPosition;
+        //            }
+        //        }
+        //    }
 
-            return currentClosestIndex;
-        }
+        //    return currentClosestIndex;
+        //}
 
-        private bool IsInFrontSight(Transform other)
-        {
+        //private bool IsInFrontSight(Transform other)
+        //{
 
-            float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
-            float frontOrRear = AngleDir(transform.right, (transform.position - other.transform.position), Vector3.up);
+        //    float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
+        //    float frontOrRear = Utils.AngleDir(transform.right, (transform.position - other.transform.position), Vector3.up);
 
-            return (carDirection < 145 && carDirection > 55 && frontOrRear > 0);
-        }
+        //    return (carDirection < 145 && carDirection > 55 && frontOrRear > 0);
+        //}
         
-        private bool IsInRearSight(Transform other)
-        {
+        //private bool IsInRearSight(Transform other)
+        //{
 
-            float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
-            float frontOrRear = AngleDir(transform.right, (transform.position - other.transform.position), Vector3.up);
+        //    float carDirection = Vector3.Angle(transform.right, (other.transform.position - transform.position).normalized);
+        //    float frontOrRear = Utils.AngleDir(transform.right, (transform.position - other.transform.position), Vector3.up);
 
-            return (carDirection < 145 && carDirection > 55 && frontOrRear < 0);
-        }
+        //    return (carDirection < 145 && carDirection > 55 && frontOrRear < 0);
+        //}
 
-        private bool IsInSameDirection(Vector3 otherForward)
-        {
-            float direction = Vector3.Angle(transform.forward, otherForward);
+        //private bool IsInSameDirection(Vector3 otherForward)
+        //{
+        //    float direction = Vector3.Angle(transform.forward, otherForward);
 
-            return direction < 45;
-        }
+        //    return direction < 45;
+        //}
 
         #endregion
 
         #region Environment Interaction
+        private void OnCollisionExit(Collision collision)
+        {
+            currentCollisionTimer = 0;
+        }
+
         private void OnCollisionStay(Collision collision)
         {
             if (collision.collider.CompareTag("Car") && (currentState == StateType.Moving || currentState == StateType.MovingBehindCar))
             {
                 Debug.Log("We have car collision!");
 
-                if (IsInFrontSight(collision.transform)/* && !IsInSameDirection(collision.transform.forward)*/)
+                if (Utils.IsInFrontSight(this.transform, collision.transform)/* && !IsInSameDirection(collision.transform.forward)*/)
                 {
                     currentState = StateType.StartAstern;
                 }
-                else if (!IsInFrontSight(collision.transform) && !IsInRearSight(collision.transform) && WillAvoidanceFrontCar)
+                else if (!Utils.IsInFrontSight(this.transform, collision.transform) && !Utils.IsInRearSight(this.transform, collision.transform) && WillAvoidanceFrontCar)
                 {
                     otherCar = collision.collider.GetComponentInParent<ATMCBaseUnitController>();
                     if(otherCar.currentSpeedSqr < controller.currentSpeedSqr)
                         currentState = StateType.StartAvoidance;
                 }
             }
+
+            // Demo
+            currentCollisionTimer += Time.deltaTime;
+            if(currentCollisionTimer > 7f && isShow == false)
+            {
+                DeActive();
+            }
+            // --
         }
 
         private void OnTriggerEnter(Collider other)
@@ -548,15 +563,15 @@ namespace ATMC
             {
                 otherCar = other.GetComponentInParent<ATMCBaseUnitController>();
 
-                if (IsInFrontSight(other.transform) && IsInSameDirection(other.transform.forward) && !other.isTrigger)
+                if (Utils.IsInFrontSight(this.transform, other.transform) && Utils.IsInSameDirection(this.transform, other.transform.forward) && !other.isTrigger)
                 {
                     currentState = StateType.MovingBehindCar;
                 }
-                else if (IsInFrontSight(other.transform) && !IsInSameDirection(other.transform.forward) && !other.isTrigger)
+                else if (Utils.IsInFrontSight(this.transform, other.transform) && !Utils.IsInSameDirection(this.transform, other.transform.forward) && !other.isTrigger)
                 {
                     currentState = StateType.StopByCar;
                 }
-                else if (IsInFrontSight(other.transform) && WillAvoidanceFrontCar/* && other.isTrigger*/)
+                else if (Utils.IsInFrontSight(this.transform, other.transform) && WillAvoidanceFrontCar/* && other.isTrigger*/)
                 {
                     if (otherCar.currentSpeedSqr > controller.currentSpeedSqr)
                     {
@@ -564,8 +579,8 @@ namespace ATMC
                     }
                     else
                     {
-                        float otherLeftOrRight = AngleDir(transform.forward, other.transform.position - transform.position, transform.up);
-                        float targetLeftOrRight = AngleDir(transform.forward, currentTargetWaypoint - transform.position, transform.up);
+                        float otherLeftOrRight = Utils.AngleDir(transform.forward, other.transform.position - transform.position, transform.up);
+                        float targetLeftOrRight = Utils.AngleDir(transform.forward, currentTargetWaypoint - transform.position, transform.up);
                         if(otherLeftOrRight * targetLeftOrRight >= 0)
                         {
                             currentState = StateType.StartAvoidance;

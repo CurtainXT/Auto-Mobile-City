@@ -104,7 +104,7 @@ MonoBehaviour:
   defaultMaxSpeedRange: {x: 7, y: 9}
   maxPathSpeed: 5
   currentMaxSpeed: 0
-  LifeCount: 30
+  LifeCount: 20
   isShow: 1
   currentState: 8
   otherCar: {fileID: 0}
@@ -128,7 +128,7 @@ MonoBehaviour:
   currentSpeedSqr: 0
   motorForce: 1000
   breakForce: 2500
-  defaultMaxSteerAngle: 30
+  defaultMaxSteerAngle: 36
   frontLeftWheelCollider: {fileID: 1285495996524886839}
   frontRightWheelCollider: {fileID: 6731213622996459205}
   rearLeftWheelCollider: {fileID: 3699893713915346119}
@@ -732,6 +732,7 @@ GameObject:
   - component: {fileID: 667998824712205703}
   - component: {fileID: 7125472502421694155}
   - component: {fileID: 3739781883937550713}
+  - component: {fileID: 5203836590748921096}
   m_Layer: 0
   m_Name: car-passenger-base
   m_TagString: Untagged
@@ -807,6 +808,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5203836590748921096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8064711518122050088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bbdcec9ed5fb384db878fe29c59d524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8223724017361429956
 GameObject:
   m_ObjectHideFlags: 0

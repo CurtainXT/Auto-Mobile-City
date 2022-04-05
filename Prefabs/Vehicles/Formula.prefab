@@ -364,7 +364,7 @@ MonoBehaviour:
   defaultMaxSpeedRange: {x: 14, y: 16}
   maxPathSpeed: 5
   currentMaxSpeed: 0
-  LifeCount: 30
+  LifeCount: 20
   isShow: 1
   currentState: 8
   otherCar: {fileID: 0}

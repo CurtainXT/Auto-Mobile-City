@@ -104,8 +104,9 @@ MonoBehaviour:
   defaultMaxSpeedRange: {x: 9, y: 11}
   maxPathSpeed: 5
   currentMaxSpeed: 0
-  LifeCount: 30
+  LifeCount: 20
   isShow: 1
+  currentCollisionTimer: 0
   currentState: 8
   otherCar: {fileID: 0}
   isOnCollision: 0
@@ -126,9 +127,9 @@ MonoBehaviour:
   horizontalInput: 0
   verticalInput: 0
   currentSpeedSqr: 0
-  motorForce: 1500
+  motorForce: 2400
   breakForce: 3200
-  defaultMaxSteerAngle: 35
+  defaultMaxSteerAngle: 38
   frontLeftWheelCollider: {fileID: 1285495996524886839}
   frontRightWheelCollider: {fileID: 6731213622996459205}
   rearLeftWheelCollider: {fileID: 3699893713915346119}
@@ -257,6 +258,7 @@ GameObject:
   - component: {fileID: 6614326699194257431}
   - component: {fileID: 5410270109401263686}
   - component: {fileID: 7275985310407688503}
+  - component: {fileID: 663040885218778152}
   m_Layer: 0
   m_Name: car-ambulance-pickup-base
   m_TagString: Untagged
@@ -334,6 +336,18 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &663040885218778152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3394066253472105774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bbdcec9ed5fb384db878fe29c59d524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3400817944692057220
 GameObject:
   m_ObjectHideFlags: 0
