@@ -106,6 +106,7 @@ MonoBehaviour:
   currentMaxSpeed: 0
   LifeCount: 20
   isShow: 1
+  currentCollisionTimer: 0
   currentState: 8
   otherCar: {fileID: 0}
   isOnCollision: 0
@@ -126,7 +127,7 @@ MonoBehaviour:
   horizontalInput: 0
   verticalInput: 0
   currentSpeedSqr: 0
-  motorForce: 2400
+  motorForce: 4000
   breakForce: 4000
   defaultMaxSteerAngle: 38
   frontLeftWheelCollider: {fileID: 1285495996524886839}

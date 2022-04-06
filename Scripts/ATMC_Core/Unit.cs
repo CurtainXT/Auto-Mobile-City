@@ -21,8 +21,8 @@ namespace ATMC
         [HideInInspector]
         public ATMCBaseUnitController controller;
         List<Path> path = new List<Path>();
-        int currentPathIndex;
-        int currentPathPositionIndex;
+        int currentPathIndex = 0;
+        int currentPathPositionIndex = 0;
         Vector3 currentTargetWaypoint;
         [HideInInspector]
         public bool bNeedPath = true;
@@ -34,7 +34,7 @@ namespace ATMC
         private float currentMaxSpeed;
         // Demo
         public float LifeCount = 30;
-        public bool isShow = true;
+        public bool isShow = false;
         private float currentStopByCarTimer = 0;
         [SerializeField]
         private float currentCollisionTimer = 0;
@@ -61,6 +61,7 @@ namespace ATMC
         private ATMCBaseUnitController otherCar;
         [SerializeField]
         private bool isOnCollision;
+        private bool onDestroy = false;
 
         // Editor
         private Vector3 randomGizmosColor;
@@ -88,46 +89,21 @@ namespace ATMC
 
         public void DeActive()
         {
-            switch (currentState)
-            {
-                case StateType.Moving:
-                    {
-                        StopCoroutine("FollowPath");
-                    }
-                    break;
-                case StateType.StopByCar:
-                    {
-                        StopCoroutine("StartMovingAfterWait");
-                    }
-                    break;
-                case StateType.Avoidance:
-                    {
-                        StopCoroutine("DoAvoidance");
-                    }
-                    break;
-
-                case StateType.Astern:
-                    {
-                        StopCoroutine("DoAstern");
-                    }
-                    break;
-                default:
-                    break;
-            }
+            StopAllCoroutines();
             otherCar = null;
             this.gameObject.SetActive(false);
 
         }
 
-        private void OnBecameVisible()
-        {
-            isShow = true;
-        }
+        //private void OnBecameVisible()
+        //{
+        //    isShow = true;
+        //}
 
-        private void OnBecameInvisible()
-        {
-            isShow = false;
-        }
+        //private void OnBecameInvisible()
+        //{
+        //    isShow = false;
+        //}
         #endregion
 
         void Update()
@@ -170,6 +146,19 @@ namespace ATMC
                 Debug.LogWarning(this.gameObject.name + " can not find a path!");
                 // Demo
                 DeActive();
+                //if(isShow == false || onDestroy)
+                //{
+                //    DeActive();
+                //}
+                //else
+                //{
+                //    DestroyTile dTile = FindObjectOfType<DestroyTile>();
+                //    if(dTile != null && dTile.DestroyTiles.Count > 0)
+                //    {
+                //        target = dTile.DestroyTiles[UnityEngine.Random.Range(0, dTile.DestroyTiles.Count)].transform;
+                //        onDestroy = true;
+                //    }
+                //}
                 // --
                 //FindNextTarget();
             }
@@ -187,7 +176,14 @@ namespace ATMC
                 if (currentPathIndex >= path.Count)
                 {
                     currentState = StateType.NoTarget;
-                    FindNextTarget();
+                    if(onDestroy)
+                    {
+                        DeActive();
+                    }
+                    else
+                    {
+                        FindNextTarget();
+                    }
                     yield break;
                 }
                 maxPathSpeed = path[currentPathIndex].speed;
@@ -234,6 +230,11 @@ namespace ATMC
 
         private void FixCircling()
         {
+            if(path == null)
+            {
+                return;
+            }
+
             // 如果目标点在正左或正右反向 车辆可能会一直转圈
             float targetAngle = Vector3.Angle(transform.forward, currentTargetWaypoint - transform.position);
             if (targetAngle > 60 && targetAngle < 110)
@@ -246,16 +247,19 @@ namespace ATMC
                 int iterNum = 2;
                 for (int i = 0; i < iterNum; i++)
                 {
-                    nextPathPositionIndex++;
-                    if (nextPathPositionIndex >= path[nextPathIndex].pathPositions.Count)
+                    if (nextPathIndex < path.Count)
                     {
-                        nextPathPositionIndex = 0;
-                        nextPathIndex++;
-                        if (nextPathIndex >= path.Count)
+                        if (nextPathPositionIndex + 1 < path[nextPathIndex].pathPositions.Count)
                         {
-                            //StopCoroutine(FollowPath());
-                            //currentState = StateType.NoTarget;
-                            //FindNextTarget();
+                            nextPathPositionIndex++;
+                        }
+                        else if(nextPathIndex + 1 < path.Count)
+                        {
+                            nextPathPositionIndex = 0;
+                            nextPathIndex++;
+                        }
+                        else
+                        {
                             break;
                         }
                     }
@@ -373,6 +377,10 @@ namespace ATMC
                     break;
                 case StateType.NoTarget:
                     {
+                        //if(isShow)
+                        //{
+                        //    DeActive();
+                        //}
                         currentMaxSpeed = 0;
                     }
                     break;
