@@ -127,7 +127,7 @@ MonoBehaviour:
   horizontalInput: 0
   verticalInput: 0
   currentSpeedSqr: 0
-  motorForce: 4000
+  motorForce: 1800
   breakForce: 3600
   defaultMaxSteerAngle: 38
   frontLeftWheelCollider: {fileID: 1285495996524886839}

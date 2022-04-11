@@ -531,6 +531,7 @@ MonoBehaviour:
   defaultMaxSpeedRange: {x: 8, y: 10}
   maxPathSpeed: 5
   currentMaxSpeed: 0
+  trigger: {fileID: 0}
   LifeCount: 20
   isShow: 1
   currentCollisionTimer: 0
@@ -554,7 +555,7 @@ MonoBehaviour:
   horizontalInput: 0
   verticalInput: 0
   currentSpeedSqr: 0
-  motorForce: 1800
+  motorForce: 1200
   breakForce: 2500
   defaultMaxSteerAngle: 36
   frontLeftWheelCollider: {fileID: 1285495996524886839}

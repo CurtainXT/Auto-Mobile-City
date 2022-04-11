@@ -58,9 +58,6 @@ MonoBehaviour:
   - Truck
   - VeteranCar
   - RoadAdmin
-  - ArmoredTruck
-  - Bus
-  - SchoolBus
   - TowTruck
   poolTag: 
   spawnTimeDelay: 9

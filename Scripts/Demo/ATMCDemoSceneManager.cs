@@ -7,6 +7,8 @@ namespace ATMC
 {
     public class ATMCDemoSceneManager : MonoBehaviour
     {
+        public bool DebugShowUnitState;
+
         // Update is called once per frame
         void Update()
         {
@@ -14,9 +16,13 @@ namespace ATMC
             {
                 Application.Quit();
             }
-            if(Input.GetKeyUp(KeyCode.Space))
+            if(Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(0);
+            }
+            if(Input.GetKeyDown(KeyCode.Tab))
+            {
+                DebugShowUnitState = !DebugShowUnitState;
             }
         }
     }

@@ -9,36 +9,21 @@ namespace ATMC
     // 可以将Unit视为车辆驾驶员
     public class Unit : MonoBehaviour, IPooledObject
     {
-        public bool randomDestination = true;
+        /// Behavior
+
         public bool waitForTrafficLight = true;
         public bool WillAvoidanceFrontCar = true;
 
         public float AsternTime = 2.5f;
         public float StopWaitToAsternTime = 2f;
 
-        //[HideInInspector]
-        public Transform target;
-        [HideInInspector]
-        public ATMCBaseUnitController controller;
-        List<Path> path = new List<Path>();
-        int currentPathIndex = 0;
-        int currentPathPositionIndex = 0;
-        Vector3 currentTargetWaypoint;
-        [HideInInspector]
-        public bool bNeedPath = true;
-        public Vector2 defaultMaxSpeedRange;
-
         [HideInInspector]
         public float maxPathSpeed = 5f;
         [SerializeField]
         private float currentMaxSpeed;
-        // Demo
-        public float LifeCount = 30;
-        public bool isShow = false;
-        private float currentStopByCarTimer = 0;
         [SerializeField]
-        private float currentCollisionTimer = 0;
-        // --
+        private Collider trigger;
+
         [HideInInspector]
         public float CurrentMaxSpeed
         {
@@ -55,22 +40,72 @@ namespace ATMC
             }
         }
 
+        private float currentStopByCarTimer = 0;
+        [SerializeField]
+        private float currentCollisionTimer = 0;
         [SerializeField]
         StateType currentState = StateType.NoTarget;
         [SerializeField]
         private ATMCBaseUnitController otherCar;
         [SerializeField]
         private bool isOnCollision;
-        private bool onDestroy = false;
 
-        // Editor
+        ///Pathfinding
+        public PathFollowType UnitPathType;
+        public Transform[] checkpoints;
+        private uint currentCheckpointIndex = 0;
+        public Transform target;
+        [HideInInspector]
+        public ATMCBaseUnitController controller;
+        List<Path> path = new List<Path>();
+        int currentPathIndex = 0;
+        int currentPathPositionIndex = 0;
+        Vector3 currentTargetWaypoint;
+        [HideInInspector]
+        public bool bNeedPath = true;
+        public Vector2 defaultMaxSpeedRange;
+
+        /// Demo
+        public float LifeCount = 30;
+        public bool isShow = false;
+        // --
+
+        // Debugging
         private Vector3 randomGizmosColor;
+        private ATMCDemoSceneManager demoSceneManager;
+
         //--
 
         #region Spawn&Despawn
+        private void Awake()
+        {
+            // Handle checkpoints here
+        }
+
         private void Start()
         {
             controller = GetComponent<ATMCBaseUnitController>();
+
+            foreach(Collider collider in GetComponents<Collider>())
+            {
+                if(collider.isTrigger)
+                {
+                    trigger = collider;
+                }
+            }
+
+            if(UnitPathType != PathFollowType.RandomDestination)
+            {
+                if(checkpoints == null || checkpoints.Length == 0)
+                {
+                    UnitPathType = PathFollowType.RandomDestination;
+                }
+            }
+
+            demoSceneManager = FindObjectOfType<ATMCDemoSceneManager>();
+
+            if (this.gameObject.activeSelf)
+                OnObjectSpawn();
         }
 
         public void OnObjectSpawn()
@@ -94,16 +129,6 @@ namespace ATMC
             this.gameObject.SetActive(false);
 
         }
-
-        //private void OnBecameVisible()
-        //{
-        //    isShow = true;
-        //}
-
-        //private void OnBecameInvisible()
-        //{
-        //    isShow = false;
-        //}
         #endregion
 
         void Update()
@@ -146,21 +171,7 @@ namespace ATMC
                 Debug.LogWarning(this.gameObject.name + " can not find a path!");
                 // Demo
                 DeActive();
-                //if(isShow == false || onDestroy)
-                //{
-                //    DeActive();
-                //}
-                //else
-                //{
-                //    DestroyTile dTile = FindObjectOfType<DestroyTile>();
-                //    if(dTile != null && dTile.DestroyTiles.Count > 0)
-                //    {
-                //        target = dTile.DestroyTiles[UnityEngine.Random.Range(0, dTile.DestroyTiles.Count)].transform;
-                //        onDestroy = true;
-                //    }
-                //}
                 // --
-                //FindNextTarget();
             }
         }
 
@@ -176,14 +187,7 @@ namespace ATMC
                 if (currentPathIndex >= path.Count)
                 {
                     currentState = StateType.NoTarget;
-                    if(onDestroy)
-                    {
-                        DeActive();
-                    }
-                    else
-                    {
-                        FindNextTarget();
-                    }
+                    FindNextTarget();
                     yield break;
                 }
                 maxPathSpeed = path[currentPathIndex].speed;
@@ -209,22 +213,64 @@ namespace ATMC
 
         public void FindNextTarget()
         {
-            if (randomDestination)
+            switch (UnitPathType)
             {
-                while (true)
-                {
-                    Tile t = Tile.tiles[UnityEngine.Random.Range(0, Tile.tiles.Count - 1)];
-                    if (t != null)
+                case PathFollowType.RandomDestination:
                     {
-                        target = t.transform;
-                        if (Vector3.Distance(transform.position, target.position) > 90f)
+                        while (true)
                         {
-                            bNeedPath = true;
-                            break;
+                            Tile t = Tile.tiles[UnityEngine.Random.Range(0, Tile.tiles.Count - 1)];
+                            if (t != null)
+                            {
+                                target = t.transform;
+                                if (Vector3.Distance(transform.position, target.position) > 90f)
+                                {
+                                    bNeedPath = true;
+                                    break;
+                                }
+                            }
                         }
                     }
-                }
+                    break;
+                case PathFollowType.OneRoundTrip:
+                    {
+                        
+                    }
+                    break;
+                case PathFollowType.LoopRoundTrip:
+                    {
+                        currentCheckpointIndex++;
+                        if (checkpoints.Length <= currentCheckpointIndex)
+                        {
+                            currentCheckpointIndex = 1;
+                            Array.Reverse(checkpoints);
+                        }
+                        target = checkpoints[currentCheckpointIndex];
+                        bNeedPath = true;
+                    }
+                    break;
+                case PathFollowType.ClosedCirculate:
+                    {
+                        currentCheckpointIndex++;
+                        if (checkpoints.Length <= currentCheckpointIndex)
+                        {
+                            currentCheckpointIndex = 0;
+                        }
+                        target = checkpoints[currentCheckpointIndex];
+                        bNeedPath = true;
+                    }
+                    break;
+                default:
+                    break;
             }
+            //if (randomDestination)
+            //{
+
+            //}
+            //else
+            //{
+
+            //}
         }
 
 
@@ -524,6 +570,11 @@ namespace ATMC
 
         private void OnCollisionStay(Collision collision)
         {
+            if(!collision.gameObject.activeSelf || collision.gameObject == null)
+            {
+                return;
+            }
+
             if (collision.collider.CompareTag("Car") && (currentState == StateType.Moving || currentState == StateType.MovingBehindCar))
             {
                 Debug.Log("We have car collision!");
@@ -535,7 +586,7 @@ namespace ATMC
                 else if (!Utils.IsInFrontSight(this.transform, collision.transform) && !Utils.IsInRearSight(this.transform, collision.transform) && WillAvoidanceFrontCar)
                 {
                     otherCar = collision.collider.GetComponentInParent<ATMCBaseUnitController>();
-                    if(otherCar.currentSpeedSqr < controller.currentSpeedSqr)
+                    if(otherCar.currentSpeedSqr > controller.currentSpeedSqr)
                         currentState = StateType.StartAvoidance;
                 }
             }
@@ -652,7 +703,7 @@ namespace ATMC
         }
         #endregion
 
-        #region Editor Debugging
+        #region Debugging
         private void OnDrawGizmos()
         {
             if (path != null)
@@ -683,41 +734,44 @@ namespace ATMC
 
         private void OnGUI()
         {
-            if(isShow)
+            if (demoSceneManager.DebugShowUnitState)
             {
-
-                Vector2 position = Camera.main.WorldToScreenPoint(transform.position);
-                Vector2 stateSize = GUI.skin.label.CalcSize(new GUIContent(currentState.ToString()));
-                switch (currentState)
+                if (isShow)
                 {
-                    case StateType.Moving:
-                        GUI.color = Color.green;
-                        break;
-                    case StateType.MovingBehindCar:
-                        GUI.color = Color.yellow;
-                        break;
-                    case StateType.StopByTrafficLight:
-                        GUI.color = Color.red;
-                        break;
-                    case StateType.StopByCar:
-                        GUI.color = Color.black;
-                        break;
-                    case StateType.Avoidance:
-                        GUI.color = Color.blue;
-                        break;
-                    case StateType.Astern:
-                        GUI.color = Color.grey;
-                        break;
-                    default:
-                        break;
-                }
-                GUI.Label(new Rect(position.x, Screen.height - position.y + stateSize.y, stateSize.x, stateSize.y), currentState.ToString());
 
-                position = Camera.main.WorldToScreenPoint(transform.position);
-                Vector2 nameSize = GUI.skin.label.CalcSize(new GUIContent(gameObject.name));
-                GUI.color = Color.cyan;
-                //GUI.Label(new Rect(position.x - (nameSize.x / 2), position.y - nameSize.y, nameSize.x, nameSize.y), gameObject.name);
-                GUI.Label(new Rect(position.x, Screen.height - position.y, nameSize.x, nameSize.y), gameObject.name);
+                    Vector2 position = Camera.main.WorldToScreenPoint(transform.position);
+                    Vector2 stateSize = GUI.skin.label.CalcSize(new GUIContent(currentState.ToString()));
+                    switch (currentState)
+                    {
+                        case StateType.Moving:
+                            GUI.color = Color.green;
+                            break;
+                        case StateType.MovingBehindCar:
+                            GUI.color = Color.yellow;
+                            break;
+                        case StateType.StopByTrafficLight:
+                            GUI.color = Color.red;
+                            break;
+                        case StateType.StopByCar:
+                            GUI.color = Color.black;
+                            break;
+                        case StateType.Avoidance:
+                            GUI.color = Color.blue;
+                            break;
+                        case StateType.Astern:
+                            GUI.color = Color.grey;
+                            break;
+                        default:
+                            break;
+                    }
+                    GUI.Label(new Rect(position.x, Screen.height - position.y + stateSize.y, stateSize.x, stateSize.y), currentState.ToString());
+
+                    position = Camera.main.WorldToScreenPoint(transform.position);
+                    Vector2 nameSize = GUI.skin.label.CalcSize(new GUIContent(gameObject.name));
+                    GUI.color = Color.cyan;
+                    //GUI.Label(new Rect(position.x - (nameSize.x / 2), position.y - nameSize.y, nameSize.x, nameSize.y), gameObject.name);
+                    GUI.Label(new Rect(position.x, Screen.height - position.y, nameSize.x, nameSize.y), gameObject.name);
+                }
             }
         }
         #endregion

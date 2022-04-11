@@ -50,7 +50,7 @@ public class VehicleController : ATMCBaseUnitController
 
     protected override void HandleMotor()
     {
-        currentMotorForce = verticalInput > 0? verticalInput * motorForce : verticalInput * motorForce * 0.3f;
+        currentMotorForce = verticalInput > 0? verticalInput * motorForce : verticalInput * motorForce * 0.8f;
     }
 
     protected override void ApplyBreaking()
