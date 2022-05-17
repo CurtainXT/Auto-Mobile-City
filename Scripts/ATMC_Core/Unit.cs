@@ -10,13 +10,9 @@ namespace ATMC
     public class Unit : MonoBehaviour, IPooledObject
     {
         /// Behavior
-
-        public bool waitForTrafficLight = true;
-        public bool WillAvoidanceFrontCar = true;
-
         public float AsternTime = 2.5f;
         public float StopWaitToAsternTime = 2f;
-
+        public bool willAvoidance = true;
         [HideInInspector]
         public float maxPathSpeed = 5f;
         [SerializeField]
@@ -74,12 +70,20 @@ namespace ATMC
         private Vector3 randomGizmosColor;
         private ATMCDemoSceneManager demoSceneManager;
 
+
         //--
 
         #region Spawn&Despawn
         private void Awake()
         {
             // Handle checkpoints here
+
+
+            demoSceneManager = FindObjectOfType<ATMCDemoSceneManager>();
+            if (demoSceneManager == null)
+            {
+                Debug.LogError("demoSceneManager is null");
+            }
         }
 
         private void Start()
@@ -102,8 +106,6 @@ namespace ATMC
                 }
             }
 
-            demoSceneManager = FindObjectOfType<ATMCDemoSceneManager>();
-
             if (this.gameObject.activeSelf)
                 OnObjectSpawn();
         }
@@ -114,7 +116,7 @@ namespace ATMC
             if (controller == null)
                 controller = GetComponent<ATMCBaseUnitController>();
 
-            LifeCount = UnityEngine.Random.Range(30, 60); // Demo
+            LifeCount = UnityEngine.Random.Range(60, 80); // Demo
             controller.defaultMaxSpeed = UnityEngine.Random.Range(defaultMaxSpeedRange.x, defaultMaxSpeedRange.y);
             currentState = StateType.NoTarget;
             FindNextTarget();
@@ -222,11 +224,14 @@ namespace ATMC
                             Tile t = Tile.tiles[UnityEngine.Random.Range(0, Tile.tiles.Count - 1)];
                             if (t != null)
                             {
-                                target = t.transform;
-                                if (Vector3.Distance(transform.position, target.position) > 90f)
+                                if (demoSceneManager.specificTargets.Count > 0 && demoSceneManager.specificTargets.Contains(t))
                                 {
-                                    bNeedPath = true;
-                                    break;
+                                    target = t.transform;
+                                    if (Vector3.Distance(transform.position, target.position) > 90f)
+                                    {
+                                        bNeedPath = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -251,12 +256,12 @@ namespace ATMC
                     break;
                 case PathFollowType.ClosedCirculate:
                     {
-                        currentCheckpointIndex++;
                         if (checkpoints.Length <= currentCheckpointIndex)
                         {
                             currentCheckpointIndex = 0;
                         }
                         target = checkpoints[currentCheckpointIndex];
+                        currentCheckpointIndex++;
                         bNeedPath = true;
                     }
                     break;
@@ -583,7 +588,7 @@ namespace ATMC
                 {
                     currentState = StateType.StartAstern;
                 }
-                else if (!Utils.IsInFrontSight(this.transform, collision.transform) && !Utils.IsInRearSight(this.transform, collision.transform) && WillAvoidanceFrontCar)
+                else if (!Utils.IsInFrontSight(this.transform, collision.transform) && !Utils.IsInRearSight(this.transform, collision.transform))
                 {
                     otherCar = collision.collider.GetComponentInParent<ATMCBaseUnitController>();
                     if(otherCar.currentSpeedSqr > controller.currentSpeedSqr)
@@ -602,7 +607,7 @@ namespace ATMC
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("TrafficLight") && waitForTrafficLight && currentState == StateType.Moving)
+            if (other.CompareTag("TrafficLight") && currentState == StateType.Moving)
             {
                 TrafficLight trafic = other.GetComponent<TrafficLight>();
                 if (Vector3.Angle(-trafic.transform.forward, transform.forward) < 25)
@@ -630,7 +635,7 @@ namespace ATMC
                 {
                     currentState = StateType.StopByCar;
                 }
-                else if (Utils.IsInFrontSight(this.transform, other.transform) && WillAvoidanceFrontCar/* && other.isTrigger*/)
+                else if (Utils.IsInFrontSight(this.transform, other.transform)/* && other.isTrigger*/)
                 {
                     if (otherCar.currentSpeedSqr > controller.currentSpeedSqr)
                     {
@@ -640,7 +645,7 @@ namespace ATMC
                     {
                         float otherLeftOrRight = Utils.AngleDir(transform.forward, other.transform.position - transform.position, transform.up);
                         float targetLeftOrRight = Utils.AngleDir(transform.forward, currentTargetWaypoint - transform.position, transform.up);
-                        if(otherLeftOrRight * targetLeftOrRight >= 0)
+                        if(otherLeftOrRight * targetLeftOrRight >= 0 && willAvoidance)
                         {
                             currentState = StateType.StartAvoidance;
                         }
@@ -668,8 +673,12 @@ namespace ATMC
                             currentState = StateType.Moving;
                             break;
                         case StateType.StopByCar:
-                            StopCoroutine(StartMovingAfterWait(0.3f));
+                            StopCoroutine("StartMovingAfterWait");
                             StartCoroutine(StartMovingAfterWait(0.3f));
+                            break;
+                        case StateType.Avoidance:
+                            StopCoroutine("StartMovingAfterWait");
+                            currentState = StateType.Moving;
                             break;
                         default:
                             break;

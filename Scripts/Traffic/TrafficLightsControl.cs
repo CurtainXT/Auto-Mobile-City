@@ -34,8 +34,6 @@ public class TrafficLightsControl : MonoBehaviour
             firstOn = true;
         }
 
-
-
         foreach (TrafficLight light in firstLights)
         {
             if(light != null)

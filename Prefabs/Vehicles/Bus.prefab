@@ -79,10 +79,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c70cc63804f58f49a812def450957c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitForTrafficLight: 1
-  WillAvoidanceFrontCar: 0
-  AsternTime: 1
+  AsternTime: 3
   StopWaitToAsternTime: 2.4
+  willAvoidance: 0
   maxPathSpeed: 5
   currentMaxSpeed: 0
   trigger: {fileID: 0}
@@ -90,7 +89,7 @@ MonoBehaviour:
   currentState: 8
   otherCar: {fileID: 0}
   isOnCollision: 0
-  UnitPathType: 3
+  UnitPathType: 0
   checkpoints:
   - {fileID: 0}
   - {fileID: 0}
@@ -98,7 +97,7 @@ MonoBehaviour:
   target: {fileID: 0}
   controller: {fileID: 0}
   bNeedPath: 1
-  defaultMaxSpeedRange: {x: 8, y: 10}
+  defaultMaxSpeedRange: {x: 5, y: 7}
   LifeCount: 20
   isShow: 1
 --- !u!114 &5069753414321367513
@@ -118,7 +117,7 @@ MonoBehaviour:
   horizontalInput: 0
   verticalInput: 0
   currentSpeedSqr: 0
-  motorForce: 5000
+  motorForce: 2500
   breakForce: 5000
   defaultMaxSteerAngle: 38
   frontLeftWheelCollider: {fileID: 1285495996524886839}

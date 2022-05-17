@@ -45,19 +45,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isRandomSpawner: 1
   RandomPoolTagsPool:
-  - Ambulance
   - Coupe
-  - FireTruck
   - Formula
   - Hipple-Van
   - Jeep
-  - PoliceCar
   - Sedan
   - SportsCar
   - Taxi
   - Truck
   - VeteranCar
-  - RoadAdmin
-  - TowTruck
   poolTag: 
   spawnTimeDelay: 9

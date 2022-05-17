@@ -339,8 +339,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.7709346, y: 1.0183555, z: 2.3258786}
-  m_Center: {x: 0.009177804, y: 0.55066746, z: 3.9184062}
+  m_Size: {x: 1.3821136, y: 1.0183555, z: 1.8622011}
+  m_Center: {x: -0.0037827343, y: 0.5506675, z: 3.6865685}
 --- !u!114 &801647358168753951
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,23 +353,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c70cc63804f58f49a812def450957c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  randomDestination: 1
-  waitForTrafficLight: 1
-  WillAvoidanceFrontCar: 1
   AsternTime: 1
   StopWaitToAsternTime: 1.5
-  target: {fileID: 0}
-  controller: {fileID: 0}
-  bNeedPath: 1
-  defaultMaxSpeedRange: {x: 14, y: 16}
+  willAvoidance: 1
   maxPathSpeed: 5
   currentMaxSpeed: 0
-  LifeCount: 20
-  isShow: 1
+  trigger: {fileID: 0}
   currentCollisionTimer: 0
   currentState: 8
   otherCar: {fileID: 0}
   isOnCollision: 0
+  UnitPathType: 0
+  checkpoints: []
+  target: {fileID: 0}
+  controller: {fileID: 0}
+  bNeedPath: 1
+  defaultMaxSpeedRange: {x: 14, y: 16}
+  LifeCount: 20
+  isShow: 1
 --- !u!114 &-8193793085675106185
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -387,7 +388,7 @@ MonoBehaviour:
   horizontalInput: 0
   verticalInput: 0
   currentSpeedSqr: 0
-  motorForce: 3000
+  motorForce: 1500
   breakForce: 4000
   defaultMaxSteerAngle: 32
   frontLeftWheelCollider: {fileID: 5634562303103647454}

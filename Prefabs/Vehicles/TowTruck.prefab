@@ -93,23 +93,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c70cc63804f58f49a812def450957c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  randomDestination: 1
-  waitForTrafficLight: 1
-  WillAvoidanceFrontCar: 1
-  AsternTime: 1
+  AsternTime: 3
   StopWaitToAsternTime: 2
-  target: {fileID: 0}
-  controller: {fileID: 0}
-  bNeedPath: 1
-  defaultMaxSpeedRange: {x: 8, y: 10}
+  willAvoidance: 1
   maxPathSpeed: 5
   currentMaxSpeed: 0
-  LifeCount: 20
-  isShow: 1
+  trigger: {fileID: 0}
   currentCollisionTimer: 0
   currentState: 8
   otherCar: {fileID: 0}
   isOnCollision: 0
+  UnitPathType: 0
+  checkpoints: []
+  target: {fileID: 0}
+  controller: {fileID: 0}
+  bNeedPath: 1
+  defaultMaxSpeedRange: {x: 5, y: 7}
+  LifeCount: 20
+  isShow: 1
 --- !u!114 &5069753414321367513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,7 +128,7 @@ MonoBehaviour:
   horizontalInput: 0
   verticalInput: 0
   currentSpeedSqr: 0
-  motorForce: 1800
+  motorForce: 800
   breakForce: 3600
   defaultMaxSteerAngle: 38
   frontLeftWheelCollider: {fileID: 1285495996524886839}
@@ -150,8 +151,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2.8744965, y: 2.1037889, z: 3.6390328}
-  m_Center: {x: 0.005222082, y: 1.0586021, z: 4.5982256}
+  m_Size: {x: 1.9137022, y: 2.1037889, z: 2.2879155}
+  m_Center: {x: 0.0052218777, y: 1.0586022, z: 3.922667}
 --- !u!1 &321251318618109349
 GameObject:
   m_ObjectHideFlags: 0

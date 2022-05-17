@@ -12,6 +12,8 @@ namespace ATMC
         public string poolTag;
         public float spawnTimeDelay;
 
+        public bool spawnInCamera = false;
+
         private float spawnTimer;
         private ObjectPool pool;
         private Camera camera;
@@ -34,7 +36,7 @@ namespace ATMC
             if (spawnTimer <= 0 && pool != null)
             {
                 spawnTimer = spawnTimeDelay;
-                if (Utils.IsTargetVisible(camera, this.gameObject))
+                if (Utils.IsTargetVisible(camera, this.gameObject) && spawnInCamera == false)
                 {
                     return;
                 }
