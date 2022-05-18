@@ -8,6 +8,7 @@ namespace ATMC
 {
     public class ATMCDemoSceneManager : MonoBehaviour
     {
+        public string nextSceneName;
         public bool DebugShowUnitState;
         public List<Tile> specificTargets = new List<Tile>();
 
@@ -26,13 +27,10 @@ namespace ATMC
             {
                 DebugShowUnitState = !DebugShowUnitState;
             }
-            //if (Input.GetKeyDown(KeyCode.C))
-            //{
-            //    int index = SceneManager.GetActiveScene().buildIndex;
-            //    index = index + 1 >= SceneManager.sceneCount ? 0 : index + 1;
-
-            //    SceneManager.LoadScene(index);
-            //}
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                SceneManager.LoadScene(nextSceneName);
+            }
         }
     }
 }

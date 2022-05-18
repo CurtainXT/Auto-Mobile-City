@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: bf7536a7aaa30664880d9270e9bb9ff6, type: 2}
+  m_LightingDataAsset: {fileID: 112000000, guid: 769357064def6224b9b8b2e6818244dc, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: ed0b7e7cd5b33e440bdc318275fc8d03, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -2347,7 +2347,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 801647358168753951, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
       propertyPath: defaultMaxSpeedRange.x
-      value: 22
+      value: 22.8
       objectReference: {fileID: 0}
     - target: {fileID: 801647358168753951, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
       propertyPath: defaultMaxSpeedRange.y
@@ -3133,11 +3133,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 801647358168753951, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
       propertyPath: defaultMaxSpeedRange.x
-      value: 22
+      value: 22.2
       objectReference: {fileID: 0}
     - target: {fileID: 801647358168753951, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
       propertyPath: defaultMaxSpeedRange.y
-      value: 23
+      value: 22.4
       objectReference: {fileID: 0}
     - target: {fileID: 801647358168753951, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
       propertyPath: checkpoints.Array.data[0]
@@ -3257,11 +3257,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 217891751121479269, guid: 801458489646f7b45869b231311641b5, type: 3}
       propertyPath: defaultMaxSpeedRange.x
-      value: 19
+      value: 28
       objectReference: {fileID: 0}
     - target: {fileID: 217891751121479269, guid: 801458489646f7b45869b231311641b5, type: 3}
       propertyPath: defaultMaxSpeedRange.y
-      value: 22
+      value: 29
       objectReference: {fileID: 0}
     - target: {fileID: 217891751121479269, guid: 801458489646f7b45869b231311641b5, type: 3}
       propertyPath: checkpoints.Array.data[0]
@@ -3617,11 +3617,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 801647358168753951, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
       propertyPath: defaultMaxSpeedRange.x
-      value: 22
+      value: 22.6
       objectReference: {fileID: 0}
     - target: {fileID: 801647358168753951, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
       propertyPath: defaultMaxSpeedRange.y
-      value: 23
+      value: 22.8
       objectReference: {fileID: 0}
     - target: {fileID: 801647358168753951, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
       propertyPath: checkpoints.Array.data[0]
@@ -3990,7 +3990,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf45b27fd54b0a42bee9040d420093b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextSceneName: ATMC_Demo03
   DebugShowUnitState: 0
+  specificTargets: []
 --- !u!4 &1408720395
 Transform:
   m_ObjectHideFlags: 0
@@ -4432,11 +4434,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 801647358168753951, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
       propertyPath: defaultMaxSpeedRange.x
-      value: 22
+      value: 22.4
       objectReference: {fileID: 0}
     - target: {fileID: 801647358168753951, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
       propertyPath: defaultMaxSpeedRange.y
-      value: 23
+      value: 22.6
       objectReference: {fileID: 0}
     - target: {fileID: 801647358168753951, guid: e0a010a8e0fca344c9b33e3aaa53e36f, type: 3}
       propertyPath: checkpoints.Array.data[0]

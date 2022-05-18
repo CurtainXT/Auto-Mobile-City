@@ -224,7 +224,19 @@ namespace ATMC
                             Tile t = Tile.tiles[UnityEngine.Random.Range(0, Tile.tiles.Count - 1)];
                             if (t != null)
                             {
-                                if (demoSceneManager.specificTargets.Count > 0 && demoSceneManager.specificTargets.Contains(t))
+                                if (demoSceneManager.specificTargets != null && demoSceneManager.specificTargets.Count > 0)
+                                {
+                                    if (demoSceneManager.specificTargets.Contains(t))
+                                    {
+                                        target = t.transform;
+                                        if (Vector3.Distance(transform.position, target.position) > 90f)
+                                        {
+                                            bNeedPath = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
                                 {
                                     target = t.transform;
                                     if (Vector3.Distance(transform.position, target.position) > 90f)

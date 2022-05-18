@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 0a34f2474b620474faab1aa131fc3d03, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -483,11 +483,11 @@ Transform:
   - {fileID: 438874180}
   - {fileID: 1809793091}
   - {fileID: 153953098}
-  - {fileID: 305002597}
   - {fileID: 983241112}
   - {fileID: 2040675738}
-  - {fileID: 1299460840}
+  - {fileID: 305002597}
   - {fileID: 1504357355}
+  - {fileID: 1299460840}
   - {fileID: 696989571}
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -6654,6 +6654,7 @@ MonoBehaviour:
   RandomPoolTagsPool: []
   poolTag: Sedan
   spawnTimeDelay: 8
+  spawnInCamera: 0
 --- !u!1 &1508620336
 GameObject:
   m_ObjectHideFlags: 0
@@ -7421,6 +7422,7 @@ MonoBehaviour:
   RandomPoolTagsPool: []
   poolTag: Sedan
   spawnTimeDelay: 10
+  spawnInCamera: 0
 --- !u!1 &1666533899
 GameObject:
   m_ObjectHideFlags: 0
@@ -8045,6 +8047,7 @@ MonoBehaviour:
   RandomPoolTagsPool: []
   poolTag: Sedan
   spawnTimeDelay: 8
+  spawnInCamera: 0
 --- !u!1 &1745397238
 GameObject:
   m_ObjectHideFlags: 0
@@ -8369,7 +8372,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf45b27fd54b0a42bee9040d420093b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextSceneName: ATMC_Demo02
   DebugShowUnitState: 1
+  specificTargets: []
 --- !u!4 &1778829287
 Transform:
   m_ObjectHideFlags: 0
@@ -8431,6 +8436,7 @@ MonoBehaviour:
   RandomPoolTagsPool: []
   poolTag: Sedan
   spawnTimeDelay: 8
+  spawnInCamera: 0
 --- !u!1001 &1786650555
 PrefabInstance:
   m_ObjectHideFlags: 0
